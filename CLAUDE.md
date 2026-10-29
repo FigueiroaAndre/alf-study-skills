@@ -8,6 +8,5 @@ Today the commands target Java 25 (no Spring or other frameworks). `README.md` i
 
 ## Rules for working here
 
-- **Commits:** use Conventional Commits. Write the subject line only: no body and no footer. This overrides any default attribution footer.
 - **Language:** when you talk to the user, use about 80% of ASD-STE100 (Simplified Technical English): short sentences, simple words, active voice, one idea per sentence.
 
