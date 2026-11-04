@@ -93,18 +93,20 @@ Run `/bootstrap`. You can add the subject and your background after the command.
 
 The bootstrap skill does these steps:
 
-1. It asks for the facts that it does not have: the subject, your technical level, your familiarity with the subject, and your goal.
-2. It asks you to confirm the version of the subject and the scope.
-3. It shows a summary. You confirm it.
-4. It creates `state.json` with your study profile.
-5. It starts the `roadmap-builder` agent. The agent creates `ROADMAP.md`.
-6. It creates `PROGRESS.md`, a checklist that follows `ROADMAP.md`.
+1. It asks for your language, if it cannot find it from your message. It asks this question first, and alone. For some languages, it then asks for the variant, e.g. Brazilian or European Portuguese.
+2. It asks for the facts that it does not have: the subject, your background, your experience with the subject, and your goals.
+3. It asks you to confirm the version of the subject and the scope.
+4. It writes a short paragraph about you: your experience and your goals. It shows a summary. You confirm it.
+5. It creates `CLAUDE.md` with your study profile (language, subject, and the paragraph about you) and one rule: the agent communicates in your language, with about 80% of ASD-STE100 (Simplified Technical English), or an adaptation of it for other languages.
+6. It creates `state.json`. This file tracks the current lesson and the current project.
+7. It starts the `roadmap-builder` agent. The agent creates `ROADMAP.md`.
+8. It creates `PROGRESS.md`, a checklist that follows `ROADMAP.md`.
 
 You can edit `ROADMAP.md` and `PROGRESS.md` after bootstrap.
 
 ### 7. Optional: add teaching guidance
 
-Write a `CLAUDE.md` file at the root of `java-study`. Put your teaching preferences in it. For example: "Compare each Java concept to TypeScript." `/new-lesson` follows this file when it writes the theory.
+Add your teaching preferences to the `CLAUDE.md` file at the root of `java-study`. For example: "Compare each Java concept to TypeScript." `/new-lesson` follows this file when it writes the theory.
 
 ### 8. Commit the setup
 
