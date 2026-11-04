@@ -7,11 +7,11 @@ Create a new lesson for the Java study repository.
 
 ## 0. Check the current lesson
 
-- Read `state.json`. If `Lesson.Current` is set, read `<Lesson.Current>/progress.json`. That file's `Completed` is the source of truth; `state.json`'s `Lesson.Completed` should match it.
-- If the current lesson is **not completed**, do not create anything yet. Ask the user (with the question tool) whether they really want to start a new lesson while `<Lesson.Current>` is unfinished. Offer "Yes, create a new lesson" and "No, keep working on the current lesson".
+- Read `state.json`. If `lesson.current` is set, read `<lesson.current>/progress.json`. That file's `completed` is the source of truth; `state.json`'s `lesson.completed` should match it.
+- If the current lesson is **not completed**, do not create anything yet. Ask the user (with the question tool) whether they really want to start a new lesson while `<lesson.current>` is unfinished. Offer "Yes, create a new lesson" and "No, keep working on the current lesson".
   - On "No" (or no answer), stop and reply with the current lesson path.
   - On "Yes", continue. The unfinished lesson's folder and `progress.json` are left untouched.
-- If `Lesson.Current` is `null`, missing, or its folder or `progress.json` doesn't exist, or the lesson is completed, continue without asking.
+- If `lesson.current` is `null`, missing, or its folder or `progress.json` doesn't exist, or the lesson is completed, continue without asking.
 
 ## 1. Pick the subject
 
@@ -62,16 +62,16 @@ Create `Lessons/<NN>_<subject>/quiz.md` with **at most 10 questions** (fewer is 
 
 ## 6. Write `progress.json` and update `state.json`
 
-- Create `Lessons/<NN>_<subject>/progress.json` with one entry in `Exercises` per exercise folder you created (in order, `Name` being the exact folder name), every `Completed` set to `false`:
+- Create `Lessons/<NN>_<subject>/progress.json` with one entry in `exercises` per exercise folder you created (in order, `name` being the exact folder name), every `completed` set to `false`:
 
   ```json
   {
-    "Completed": false,
-    "Exercises": [
-      { "Name": "1_<first_exercise_name>", "Completed": false },
-      { "Name": "2_<second_exercise_name>", "Completed": false }
+    "completed": false,
+    "exercises": [
+      { "name": "1_<first_exercise_name>", "completed": false },
+      { "name": "2_<second_exercise_name>", "completed": false }
     ],
-    "IsQuizCompleted": false
+    "isQuizCompleted": false
   }
   ```
 
@@ -79,14 +79,14 @@ Create `Lessons/<NN>_<subject>/quiz.md` with **at most 10 questions** (fewer is 
 
   ```json
   {
-    "Lesson": {
-      "Current": "Lessons/<NN>_<subject>",
-      "Completed": false
+    "lesson": {
+      "current": "Lessons/<NN>_<subject>",
+      "completed": false
     }
   }
   ```
 
-  `Current` is the path relative to the repository root. If `state.json` is missing, create it with this shape.
+  `current` is the path relative to the repository root. If `state.json` is missing, create it with this shape.
 
 ## 7. Verify
 
