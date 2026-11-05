@@ -37,19 +37,21 @@ This file describes the folders and files that the commands in `commands/`, the 
 
 ## Which command touches which file
 
-| File | `/bootstrap` | `/new-lesson` | `/select-lesson` | `/check-lesson` | `/new-project` | `/check-project` |
-| --- | --- | --- | --- | --- | --- | --- |
-| `CLAUDE.md` | **create** | read | read | – | – | – |
-| `ROADMAP.md` | **create** (with the `roadmap-builder` agent) | read | read | – | – | – |
-| `PROGRESS.md` | **create** | read | – | **update** (check items) | read | – |
-| `state.json` | **create** | read `lesson` (only to ask to select the new lesson) | **create / update** `lesson` | **update** `lesson` | **create / update** `project` | **update** `project` |
-| `Lessons/<NN>_<subject>/Theory/<N>_<topic>/theory.md` | – | **create** (with the `lesson-theory-writer` agent) | read (`**Covers:**` line) | read | read | read |
-| `Lessons/<NN>_<subject>/Theory/<N>_<topic>/practice.md` and `practice-solution.md` | – | **create** (with the `lesson-theory-writer` agent) | – | – | – | – |
-| `Lessons/<NN>_<subject>/quiz.md` | – | **create** | – | read | – | – |
-| `Lessons/<NN>_<subject>/progress.json` | – | **create** | read | **update** | – | – |
-| `Lessons/<NN>_<subject>/Exercises/<N>_<name>/exercise.md` and verification file | – | **create** (with the `lesson-exercise-writer` agent) | – | read | – | – |
-| `Projects/<project_name>/project_description.md` | – | – | – | – | **create** | read |
-| `Projects/<project_name>/progress.json` | – | – | – | – | **create** | **update** |
+| File | `/bootstrap` | `/new-lesson` | `/select-lesson` | `/check-lesson` | `/new-project` | `/check-project` | `/commit` |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `CLAUDE.md` | **create** | read | read | – | – | – | – |
+| `ROADMAP.md` | **create** (with the `roadmap-builder` agent) | read | read | – | – | – | – |
+| `PROGRESS.md` | **create** | read | – | **update** (check items) | read | – | – |
+| `state.json` | **create** | read `lesson` (only to ask to select the new lesson) | **create / update** `lesson` | **update** `lesson` | **create / update** `project` | **update** `project` | – |
+| `Lessons/<NN>_<subject>/Theory/<N>_<topic>/theory.md` | – | **create** (with the `lesson-theory-writer` agent) | read (`**Covers:**` line) | read | read | read | – |
+| `Lessons/<NN>_<subject>/Theory/<N>_<topic>/practice.md` and `practice-solution.md` | – | **create** (with the `lesson-theory-writer` agent) | – | – | – | – | – |
+| `Lessons/<NN>_<subject>/quiz.md` | – | **create** | – | read | – | – | – |
+| `Lessons/<NN>_<subject>/progress.json` | – | **create** | read | **update** | – | – | read (to find progress commits) |
+| `Lessons/<NN>_<subject>/Exercises/<N>_<name>/exercise.md` and verification file | – | **create** (with the `lesson-exercise-writer` agent) | – | read | – | – | – |
+| `Projects/<project_name>/project_description.md` | – | – | – | – | **create** | read | – |
+| `Projects/<project_name>/progress.json` | – | – | – | – | **create** | **update** | read (to find progress commits) |
+
+`/commit` does not change the files. It only reads them to write the commit messages. To split the completions of one `progress.json` file into separate commits, it writes the file step by step, and the last step restores the final version.
 
 The check commands never change the student's code or the student's answers in `quiz.md`. They put temporary test files in the scratchpad directory, not in the study repository.
 

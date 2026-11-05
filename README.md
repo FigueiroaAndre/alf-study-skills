@@ -111,10 +111,7 @@ Add your teaching preferences to the `CLAUDE.md` file at the root of `java-study
 
 ### 8. Commit the setup
 
-```bash
-git add -A
-git commit -m "chore: set up study repository"
-```
+Run `/commit`. It commits the setup files with a Conventional Commits subject line.
 
 ## Study
 
@@ -127,6 +124,29 @@ After setup, use these commands in a loop:
 | `/check-lesson` | Checks your exercises and quiz answers. It gives feedback and updates your progress. |
 | `/new-project [idea]` | Creates a project description from what you studied. You write the code. |
 | `/check-project` | Checks your project against its requirements and updates your progress. |
+| `/commit` | Commits your changes. Each completed theory topic, exercise, quiz, lesson, or project gets its own progress commit. All other changes get a Conventional Commits subject line. If git is not set up, it does nothing. |
+
+### Track your progress with git
+
+`/commit` writes progress commits with this template:
+
+```
+progress(<lesson or project folder>): <complete | work on> <item>
+```
+
+The item is `theory <N>_<topic>`, `exercise <N>_<name>`, `quiz`, `lesson`, or `project`. Each commit records exactly one item. For example, after `/check-lesson` completes a theory topic, an exercise, and the lesson, `/commit` makes three commits:
+
+```
+progress(03_records): complete theory 2_compact_constructors
+progress(03_records): complete exercise 4_bank_account
+progress(03_records): complete lesson
+```
+
+To see your progress and your consistency, run:
+
+```bash
+git log --format='%ad %s' --date=short --grep='^progress('
+```
 
 [STRUCTURE.md](STRUCTURE.md) describes all the files and folders that the commands read and write.
 
