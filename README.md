@@ -121,7 +121,7 @@ After setup, use these commands in a loop:
 
 | Command | What it does |
 | --- | --- |
-| `/new-lesson [subject]` | Creates a lesson: theory, exercises, and a quiz. With no subject, it uses the next unchecked item in `PROGRESS.md`. |
+| `/new-lesson [subject]` | Creates a lesson: theory topics with small practice exercises, exercises with test files, and a quiz. With no subject, it uses the next `ROADMAP.md` subsection that has no lesson in `Lessons/`. |
 | `/check-lesson` | Checks your exercises and quiz answers. It gives feedback and updates your progress. |
 | `/new-project [idea]` | Creates a project description from what you studied. You write the code. |
 | `/check-project` | Checks your project against its requirements and updates your progress. |
