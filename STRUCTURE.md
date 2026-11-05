@@ -37,14 +37,15 @@ This file describes the folders and files that the commands in `commands/`, the 
 
 ## Which command touches which file
 
-| File | `/bootstrap` | `/new-lesson` | `/select-lesson` | `/check-lesson` | `/new-project` | `/check-project` | `/commit` |
+| File | `/bootstrap` | `/new-lesson` | `/select-lesson` | `/check-progress` | `/new-project` | `/check-project` | `/commit` |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `CLAUDE.md` | **create** | read | read | – | – | – | – |
 | `ROADMAP.md` | **create** (with the `roadmap-builder` agent) | read | read | – | – | – | – |
 | `PROGRESS.md` | **create** | read | – | **update** (check items) | read | – | – |
 | `state.json` | **create** | read `lesson` (only to ask to select the new lesson) | **create / update** `lesson` | **update** `lesson` | **create / update** `project` | **update** `project` | – |
 | `Lessons/<NN>_<subject>/Theory/<N>_<topic>/theory.md` | – | **create** (with the `lesson-theory-writer` agent) | read (`**Covers:**` line) | read | read | read | – |
-| `Lessons/<NN>_<subject>/Theory/<N>_<topic>/practice.md` and `practice-solution.md` | – | **create** (with the `lesson-theory-writer` agent) | – | – | – | – | – |
+| `Lessons/<NN>_<subject>/Theory/<N>_<topic>/practice.md` and `practice-solution.md` | – | **create** (with the `lesson-theory-writer` agent) | – | read (with the `lesson-checker` agent) | – | – | – |
+| `Lessons/<NN>_<subject>/Theory/<N>_<topic>/` (the student's practice files) | – | – | – | read (with the `lesson-checker` agent) | – | – | read (to find work in progress) |
 | `Lessons/<NN>_<subject>/quiz.md` | – | **create** | – | read | – | – | – |
 | `Lessons/<NN>_<subject>/progress.json` | – | **create** | read | **update** | – | – | read (to find progress commits) |
 | `Lessons/<NN>_<subject>/Exercises/<N>_<name>/exercise.md` and verification file | – | **create** (with the `lesson-exercise-writer` agent) | – | read | – | – | – |
@@ -54,6 +55,8 @@ This file describes the folders and files that the commands in `commands/`, the 
 `/commit` does not change the files. It only reads them to write the commit messages. To split the completions of one `progress.json` file into separate commits, it writes the file step by step, and the last step restores the final version.
 
 The check commands never change the student's code or the student's answers in `quiz.md`. They put temporary test files in the scratchpad directory, not in the study repository.
+
+`/check-progress` starts one `lesson-checker` agent for each theory topic and each exercise, and one agent for the whole quiz. The agents run in parallel and only read the files. `/check-progress` then updates `progress.json`, `state.json` and `PROGRESS.md`, and runs `/commit` to record the progress.
 
 ## Language of the files
 
@@ -110,7 +113,7 @@ Example:
 How the commands use it:
 
 - `/new-lesson` reads the checked items to know what the user already studied. It does not use the checkboxes to choose the next lesson.
-- `/check-lesson` changes `- [ ]` to `- [x]` for every item in the subsection when the lesson is complete. If all subsections of a `###` section are checked, it also checks the section in "Section Summary". It never unchecks an item.
+- `/check-progress` changes `- [ ]` to `- [x]` for every item in the subsection when the lesson is complete. If all subsections of a `###` section are checked, it also checks the section in "Section Summary". It never unchecks an item.
 - `/new-project` uses the checked items to decide what the student already knows.
 
 ### `ROADMAP.md`
@@ -220,13 +223,13 @@ The text of one topic. The second line must be a `**Covers:**` line. All topics 
 **Covers:** PROGRESS.md 1.1 Toolchain and running code
 ```
 
-`/new-lesson` and `/check-lesson` use this line to find the subsection that the lesson covers. A lesson that is not in `PROGRESS.md` uses `**Covers:** none`.
+`/new-lesson` and `/check-progress` use this line to find the subsection that the lesson covers. A lesson that is not in `PROGRESS.md` uses `**Covers:** none`.
 
 The file ends with a "Common pitfalls" list, a "Key takeaways" list, and a "Further reading" list (documentation, articles, videos).
 
 #### `practice.md`
 
-Two small exercises about the topic, each with the expected result and a hint in a collapsed block. The student does them right after the theory. They are not graded. When the student finishes them, the topic is complete in `progress.json`.
+Two small exercises about the topic, each with the expected result and a hint in a collapsed block. Each exercise gives the name of the file that the student saves in the topic folder. The student does them right after the theory. They are not graded. When the student finishes them, `/check-progress` checks the files in the topic folder, and the topic is complete in `progress.json`.
 
 #### `practice-solution.md`
 
@@ -273,10 +276,10 @@ The solutions of the two exercises in `practice.md`, with a short explanation. I
 ```
 
 - `theory[].name` is the exact theory topic folder name.
-- `/check-lesson` sets a theory topic to `true` when all the exercises in its `practice.md` are done and correct.
+- `/check-progress` sets a theory topic to `true` when all the exercises in its `practice.md` are done and correct.
 - `exercises[].name` is the exact exercise folder name.
-- `/check-lesson` sets an exercise to `true` when the code is correct.
-- `/check-lesson` sets `isQuizCompleted` to `true` when all questions have an answer, even if some answers are wrong.
+- `/check-progress` sets an exercise to `true` when the code is correct.
+- `/check-progress` sets `isQuizCompleted` to `true` when all questions have an answer, even if some answers are wrong.
 - `completed` becomes `true` when all theory topics, all exercises and the quiz are complete.
 
 ## Projects
