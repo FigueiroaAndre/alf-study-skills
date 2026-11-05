@@ -7,14 +7,14 @@ Review the student's work on the **current project** and update their progress.
 
 ## 0. Find the current project
 
-- Read `state.json`. If `Project.Current` is `null`, missing, or its folder doesn't exist, tell the user there is no current project (suggest `/new-project`) and stop.
-- Read `<Project.Current>/progress.json`, which is the source of truth.
-- **Re-sync `state.json`:** if its `Project.Completed` differs from `progress.json`'s `Completed`, set it to match and mention the fix.
+- Read `state.json`. If `project.current` is `null`, missing, or its folder doesn't exist, tell the user there is no current project (suggest `/new-project`) and stop.
+- Read `<project.current>/progress.json`, which is the source of truth.
+- **Re-sync `state.json`:** if its `project.completed` differs from `progress.json`'s `completed`, set it to match and mention the fix.
 - If the project is already completed, say so and stop.
 
 ## 1. Understand what was asked
 
-Read `<Project.Current>/project_description.md`, in particular the numbered requirements (R1, R2, …) and the expected behavior. Stretch goals are optional and never block completion.
+Read `<project.current>/project_description.md`, in particular the numbered requirements (R1, R2, …) and the expected behavior. Stretch goals are optional and never block completion.
 
 ## 2. Inspect what the student built
 
@@ -39,8 +39,8 @@ For every requirement that isn't fully met:
 
 If **all** numbered requirements are met:
 
-- Set `Completed` to `true` in `<Project.Current>/progress.json`.
-- Set `Project.Completed` to `true` in `state.json`.
+- Set `completed` to `true` in `<project.current>/progress.json`.
+- Set `project.completed` to `true` in `state.json`.
 - Congratulate the user, mention any stretch goals still open, and say they can run `/new-project` for the next project.
 
 Otherwise leave both as `false`. Use Edit for JSON changes, keep the existing structure, and confirm the files are still valid JSON. Do not edit `PROGRESS.md`.

@@ -7,11 +7,11 @@ Create a new study project for the Java repository. The student builds it themse
 
 ## 0. Check the current project
 
-- Read `state.json`. If `Project.Current` is set, read `<Project.Current>/progress.json` (its `Completed` is the source of truth).
-- If the current project is **not completed**, do not create anything yet. Ask the user (with the question tool) whether they really want to start a new project while `<Project.Current>` is unfinished. Offer "Yes, create a new project" and "No, keep working on the current project".
+- Read `state.json`. If `project.current` is set, read `<project.current>/progress.json` (its `completed` is the source of truth).
+- If the current project is **not completed**, do not create anything yet. Ask the user (with the question tool) whether they really want to start a new project while `<project.current>` is unfinished. Offer "Yes, create a new project" and "No, keep working on the current project".
   - On "No" (or no answer), stop and reply with the current project path.
   - On "Yes", continue. The unfinished project's folder is left untouched.
-- If `Project.Current` is `null`, missing, its folder or `progress.json` doesn't exist, or the project is completed, continue without asking.
+- If `project.current` is `null`, missing, its folder or `progress.json` doesn't exist, or the project is completed, continue without asking.
 
 ## 1. Decide what the project is
 
@@ -46,20 +46,20 @@ Audience: a fullstack engineer strong in JS/TS who is learning Java. Include:
 
   ```json
   {
-    "Completed": false
+    "completed": false
   }
   ```
 
-- Update `state.json` at the repository root. Keep the existing structure (including `Lesson`) and only change the `Project` fields:
+- Update `state.json` at the repository root. Keep the existing structure (including `lesson`) and only change the `project` fields:
 
   ```json
-  "Project": {
-    "Current": "Projects/<project_name>",
-    "Completed": false
+  "project": {
+    "current": "Projects/<project_name>",
+    "completed": false
   }
   ```
 
-  `Current` is relative to the repository root. If `state.json` or its `Project` key is missing, create it with this shape.
+  `current` is relative to the repository root. If `state.json` or its `project` key is missing, create it with this shape.
 
 ## 5. Verify
 
