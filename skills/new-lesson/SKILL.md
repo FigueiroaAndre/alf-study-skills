@@ -1,10 +1,10 @@
 ---
 name: new-lesson
-description: Create the next lesson of the study repository. Find the next ROADMAP.md subsection that has no lesson in Lessons/, or use the subject in the argument. Then create the lesson folder with one theory topic per roadmap bullet (lesson-theory-writer agent), ordered exercises with test files (lesson-exercise-writer agent), a quiz, and progress.json. Use when the user runs /new-lesson or wants a new lesson.
-argument-hint: [roadmap subsection number or title, or any subject]
+description: Create the next lesson of the study repository. Find the next ROADMAP.md subsection that has no lesson in Lessons/, or use the subject in the argument. Then create the lesson folder with one theory topic per roadmap bullet (lesson-theory-writer agent), ordered exercises with test files (lesson-exercise-writer agent), a quiz, and progress.json. It does not change state.json: at the end, it asks if the user wants to select the new lesson with the select-lesson skill (with --select, it selects it without a question). Use when the user runs /new-lesson or wants a new lesson, and from the select-lesson skill.
+argument-hint: [roadmap subsection number or title, or any subject] [--select]
 ---
 
-Create a new lesson in the study repository. All paths below are relative to the root of the **study repository** (the current working directory). This skill works for any subject of study. It does not read `state.json` to decide what to create.
+Create a new lesson in the study repository. All paths below are relative to the root of the **study repository** (the current working directory). This skill works for any subject of study. It does not read `state.json` to decide what to create, and it does not change `state.json`. The user can create more lessons in advance. The `select-lesson` skill selects the current lesson.
 
 ## 0. Read the context
 
@@ -16,6 +16,8 @@ Create a new lesson in the study repository. All paths below are relative to the
   - For an older lesson with no `Theory/` folder, read the `**Covers:**` line of `Lessons/<lesson>/theory.md`.
   - If no file has a `**Covers:**` line, match the folder name to the closest roadmap subsection title. If no subsection matches, the lesson covers nothing.
   - `**Covers:** none` means that the lesson is not in the roadmap.
+
+If `$ARGUMENTS` contains `--select`, remove it from the arguments and remember it. It means that the user already chose to select the new lesson (the `select-lesson` skill sends it). Step 10 uses it.
 
 Write all study files in the language of the study profile, and follow the language rule in `CLAUDE.md`. Use the same language when you talk to the user.
 
@@ -124,7 +126,7 @@ Create `Lessons/<NN>_<subject>/quiz.md` with **at most 10 questions**. Fewer is 
 - Under each question, add a `**Your answer:**` line for the student.
 - Put the answer key at the end, in a collapsed block: `<details><summary>Answer key</summary> ... </details>`. Give a one-line explanation for each answer. For open questions, give the key points of a good answer.
 
-## 7. Write `progress.json` and `state.json`
+## 7. Write `progress.json`
 
 Create `Lessons/<NN>_<subject>/progress.json`. Add one entry in `exercises` for each folder in `Exercises/`, in order. `name` is the exact folder name. All values are `false`:
 
@@ -139,14 +141,7 @@ Create `Lessons/<NN>_<subject>/progress.json`. Add one entry in `exercises` for 
 }
 ```
 
-Then update `state.json` so that `/check-lesson` finds the new lesson. Set `lesson.current` to `"Lessons/<NN>_<subject>"` and `lesson.completed` to `false`. Do not change other keys. If `state.json` is missing, create it with this shape:
-
-```json
-{
-  "lesson": { "current": "Lessons/<NN>_<subject>", "completed": false },
-  "project": { "current": null, "completed": false }
-}
-```
+Do not change `state.json`. Step 10 offers to select the new lesson.
 
 ## 8. Verify
 
@@ -154,8 +149,8 @@ Then update `state.json` so that `/check-lesson` finds the new lesson. Set `less
 - `Theory/` has one folder for each planned topic. Each folder has `theory.md`, `practice.md` and `practice-solution.md`. `practice.md` has no solutions. Each `theory.md` has the same `**Covers:**` line on its second line.
 - Each exercise folder has `exercise.md` and a verification file. No exercise folder has a solution.
 - `quiz.md` has 10 questions or fewer. The code snippets in it give the results that the answer key says. Run them if you are not sure.
-- `progress.json` lists every exercise folder. `progress.json` and `state.json` are valid JSON.
-- Do not edit `ROADMAP.md` or `PROGRESS.md`. `/check-lesson` checks the `PROGRESS.md` items when the lesson is complete.
+- `progress.json` lists every exercise folder. `progress.json` is valid JSON.
+- Do not edit `ROADMAP.md`, `PROGRESS.md` or `state.json`. `/check-lesson` checks the `PROGRESS.md` items when the lesson is complete.
 
 ## 9. Report
 
@@ -165,3 +160,16 @@ Reply with:
 - The theory topics, in order.
 - The exercises, in order, and the command that runs the verification of each one.
 - The number of quiz questions.
+
+## 10. Offer to select the new lesson
+
+If you got `--select`, do not ask. Invoke the `select-lesson` skill with the Skill tool, with the arguments `Lessons/<NN>_<subject> --yes`. Then stop.
+
+Otherwise:
+
+- Read `state.json`. If `lesson.current` is set and its folder exists, read the `progress.json` of that lesson.
+- Ask the user (with the question tool) if they want to select the new lesson as the current lesson. Offer "Select the new lesson" and "Keep the current lesson".
+  - In the question, name the current lesson, or say that there is no current lesson.
+  - If the current lesson is not complete (`completed: false` in its `progress.json`), say this in the question. Say what is not done (exercises, quiz). Tell the user that its progress stays in its `progress.json`.
+- **"Select the new lesson":** invoke the `select-lesson` skill with the Skill tool, with the arguments `Lessons/<NN>_<subject> --yes`. `--yes` tells it that the user already confirmed the change.
+- **"Keep the current lesson"** (or no answer): do not change `state.json`. Tell the user that they can run `/select-lesson Lessons/<NN>_<subject>` later to select the new lesson.
