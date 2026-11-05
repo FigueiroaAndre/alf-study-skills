@@ -1,0 +1,296 @@
+# STRUCTURE.md
+
+This file describes the folders and files that the commands in `commands/`, the skills in `skills/`, and the agents in `agents/` read and write. All paths are relative to the root of the **study repository** (the repository where you run the commands), not this repository.
+
+## Overview
+
+```
+<study-repo>/
+├── CLAUDE.md                  # Created by /bootstrap. Study profile and language rule. You can add teaching guidance.
+├── ROADMAP.md                 # Created by /bootstrap (roadmap-builder agent). Detailed scope per subject.
+├── PROGRESS.md                # Created by /bootstrap. Checklist of subjects to study.
+├── state.json                 # Created by /bootstrap. Current lesson and current project.
+├── Lessons/
+│   └── <NN>_<subject>/        # One folder per lesson, e.g. 03_records/
+│       ├── quiz.md
+│       ├── progress.json
+│       ├── Theory/
+│       │   ├── 1_<topic>/     # One folder per roadmap bullet
+│       │   │   ├── theory.md
+│       │   │   ├── practice.md
+│       │   │   └── practice-solution.md
+│       │   └── 2_<topic>/
+│       │       └── ...
+│       └── Exercises/
+│           ├── 1_<exercise_name>/
+│           │   ├── exercise.md
+│           │   ├── <verification file>  # e.g. a test file
+│           │   └── ...        # Optional starter file, then the student's code
+│           └── 2_<exercise_name>/
+│               └── ...
+└── Projects/
+    └── <project_name>/        # One folder per project, e.g. library_manager/
+        ├── project_description.md
+        ├── progress.json
+        └── ...                # The student's code
+```
+
+## Which command touches which file
+
+| File | `/bootstrap` | `/new-lesson` | `/check-lesson` | `/new-project` | `/check-project` |
+| --- | --- | --- | --- | --- | --- |
+| `CLAUDE.md` | **create** | read | – | – | – |
+| `ROADMAP.md` | **create** (with the `roadmap-builder` agent) | read | – | – | – |
+| `PROGRESS.md` | **create** | read | **update** (check items) | read | – |
+| `state.json` | **create** | **create / update** `lesson` (not read) | **update** `lesson` | **create / update** `project` | **update** `project` |
+| `Lessons/<NN>_<subject>/Theory/<N>_<topic>/theory.md` | – | **create** (with the `lesson-theory-writer` agent) | read | read | read |
+| `Lessons/<NN>_<subject>/Theory/<N>_<topic>/practice.md` and `practice-solution.md` | – | **create** (with the `lesson-theory-writer` agent) | – | – | – |
+| `Lessons/<NN>_<subject>/quiz.md` | – | **create** | read | – | – |
+| `Lessons/<NN>_<subject>/progress.json` | – | **create** | **update** | – | – |
+| `Lessons/<NN>_<subject>/Exercises/<N>_<name>/exercise.md` and verification file | – | **create** (with the `lesson-exercise-writer` agent) | read | – | – |
+| `Projects/<project_name>/project_description.md` | – | – | – | **create** | read |
+| `Projects/<project_name>/progress.json` | – | – | – | **create** | **update** |
+
+The check commands never change the student's code or the student's answers in `quiz.md`. They put temporary test files in the scratchpad directory, not in the study repository.
+
+## Language of the files
+
+`ROADMAP.md`, `PROGRESS.md`, and the lesson and project files use the language from the study profile in `CLAUDE.md`. Technical terms are not translated. These fixed markers stay in English in all languages, because the commands search for them: `## BEGINNER`, `## INTERMEDIATE`, `## ADVANCED`, `## Section Summary`, `**Practice:**` / `Practice:`, `**Covers:**`, `**Your answer:**` and `Answer key`. The file names, folder names, and JSON keys also stay in English. All JSON keys (in `state.json` and in every `progress.json`) use camelCase.
+
+## Root files
+
+### `PROGRESS.md`
+
+`/bootstrap` creates this file from `ROADMAP.md`. You can edit it. It is a Markdown checklist of the subjects to study.
+
+- `##` headings are levels: `## BEGINNER`, `## INTERMEDIATE` and `## ADVANCED`, in this order.
+- `###` headings are sections: `### <N>. <Title>`. Section numbers continue across the levels.
+- `####` headings are subsections: `#### <N>.<M> <Title>`. Each subsection has `- [ ]` items.
+- The levels, sections, and subsections are the same as in `ROADMAP.md`, with the same numbers and titles.
+- An item that starts with `Practice:` is covered by the lesson exercises.
+- A list named "Section Summary" at the bottom has one checkbox per `###` section.
+
+Example:
+
+```markdown
+# Java Learning Progress
+
+## BEGINNER
+
+### 1. Basics
+
+#### 1.1 Toolchain and running code
+- [ ] Install the JDK
+- [ ] Run a single file with `java Foo.java`
+- [ ] Practice: write and run a small program
+
+## INTERMEDIATE
+
+### 2. Object-Oriented Programming
+
+#### 2.1 Classes and objects
+- [ ] Fields, constructors, methods
+- [ ] Access modifiers
+
+## ADVANCED
+
+### 3. Concurrency
+
+#### 3.1 Fundamentals
+- [ ] Threads and `Runnable`
+
+## Section Summary
+- [ ] 1. Basics
+- [ ] 2. Object-Oriented Programming
+- [ ] 3. Concurrency
+```
+
+How the commands use it:
+
+- `/new-lesson` reads the checked items to know what the user already studied. It does not use the checkboxes to choose the next lesson.
+- `/check-lesson` changes `- [ ]` to `- [x]` for every item in the subsection when the lesson is complete. If all subsections of a `###` section are checked, it also checks the section in "Section Summary". It never unchecks an item.
+- `/new-project` uses the checked items to decide what the student already knows.
+
+### `ROADMAP.md`
+
+The `roadmap-builder` agent creates this file. `/bootstrap` starts the agent after it creates `CLAUDE.md`. The agent reads the study profile in `CLAUDE.md`. You can edit the file.
+
+`/new-lesson` (with no subject) takes the first `####` subsection that no folder in `Lessons/` covers. It finds what a lesson covers from the `**Covers:**` line of its theory. Each concept bullet of the subsection becomes one theory topic. The `**Practice:**` bullet is covered by the exercises.
+
+- The headings are the same as in `PROGRESS.md`: `##` levels (`BEGINNER`, `INTERMEDIATE`, `ADVANCED`), `###` sections, and `####` subsections.
+- Each subsection has a bullet list of concepts. Most subsections end with a `- **Practice:** ...` bullet.
+- The three levels are always present. The user context changes the depth of each level, not the levels.
+- Optional `## Project ideas` and `## Suggested order and pacing` sections, and a `**Resources:**` line, come after `## ADVANCED`. They are not copied to `PROGRESS.md`.
+
+Example:
+
+```markdown
+# Java Learning Roadmap (Java 25, no Spring)
+
+## BEGINNER
+
+### 1. Basics
+
+#### 1.1 Toolchain and running code
+- JDK vs. JRE vs. JVM, and what `javac` and `java` do.
+- Source-launcher mode (`java Foo.java`).
+- **Practice:** Hello World, then a program that reads command-line args.
+```
+
+### `CLAUDE.md`
+
+`/bootstrap` creates this file. It has two parts: the study profile and the rules. The file is in English, because the agent reads it.
+
+```markdown
+# CLAUDE.md
+
+## Study profile
+
+- **Language:** English
+- **Subject of study:** Java 25
+
+### User context
+
+Senior fullstack engineer with 8 years of experience, mostly TypeScript (Node.js, React) and Python. Has never written Java, but knows object-oriented programming and static types from TypeScript. Wants to learn the Java language as a base for Spring, and then get a backend software engineer position.
+
+## Rules
+
+- **Language:** communicate with the user in English, and write the study files in English. Use about 80% of ASD-STE100 (Simplified Technical English): short sentences, simple words, active voice, one idea per sentence.
+```
+
+- `**Language:**` is the language that the user wants to use, as the English name of the language. It includes the variant when the language has variants that are different in written text (e.g. `English`, `Brazilian Portuguese`, `Simplified Chinese`).
+- `**Subject of study:**` is the subject, with the version if the subject has versions (e.g. `Java 25`).
+- `### User context` is one paragraph about the user: background (role, experience, known technologies), current experience with the subject, and goals.
+- The language rule says: communicate with the user and write the study files in the profile language, with about 80% of ASD-STE100 (Simplified Technical English). It also says: do not translate technical terms, and keep the fixed markers in English (see [Language of the files](#language-of-the-files)). For a language other than English, the rule uses an adaptation of ASD-STE100, and one paragraph lists the main adaptations for that language.
+- If the file already exists, `/bootstrap` keeps its content. It only adds or replaces the `## Study profile` section and the language rule.
+
+You can edit the study profile, and you can add teaching guidance to this file. `/new-lesson` and its agents follow it when they write the theory and the exercises.
+
+### `state.json`
+
+This file points to the current lesson and the current project. `/bootstrap` creates it. If it does not exist, `/new-lesson` or `/new-project` creates it. `/new-lesson` does not read it to choose the next lesson. It only sets `lesson.current` to the new lesson.
+
+```json
+{
+  "lesson": {
+    "current": "Lessons/03_records",
+    "completed": false
+  },
+  "project": {
+    "current": "Projects/library_manager",
+    "completed": false
+  }
+}
+```
+
+- `/bootstrap` sets `lesson.current` and `project.current` to `null`.
+- `current` is a path relative to the repository root, or `null`.
+- `completed` is a copy of the `completed` value in the `progress.json` of that folder. The `progress.json` file is the source of truth. The check commands correct `state.json` if the two values are different.
+- A new lesson or project replaces `current`. The old folder stays as it is.
+
+## Lessons
+
+### Folder name: `Lessons/<NN>_<subject>/`
+
+- `<NN>` is the next free two-digit number (`01`, `02`, …).
+- `<subject>` is a short `snake_case` name.
+
+### `Theory/<N>_<topic>/`
+
+- One folder for each concept bullet of the roadmap subsection, in the same order. `<N>` starts at `1` and has no leading zero. `<topic>` is a short `snake_case` name.
+- The `lesson-theory-writer` agent writes each folder. `/new-lesson` starts the agents one after another. Each agent reads the theory of the earlier topics, so the topics connect.
+
+#### `theory.md`
+
+The text of one topic. The second line must be a `**Covers:**` line. All topics of a lesson have the same line:
+
+```markdown
+# 1. Records basics
+
+**Covers:** PROGRESS.md 1.1 Toolchain and running code
+```
+
+`/new-lesson` and `/check-lesson` use this line to find the subsection that the lesson covers. A lesson that is not in `PROGRESS.md` uses `**Covers:** none`.
+
+The file ends with a "Common pitfalls" list, a "Key takeaways" list, and a "Further reading" list (documentation, articles, videos).
+
+#### `practice.md`
+
+Two small exercises about the topic, each with the expected result and a hint in a collapsed block. The student does them right after the theory. They are not graded and are not in `progress.json`.
+
+#### `practice-solution.md`
+
+The solutions of the two exercises in `practice.md`, with a short explanation. It is a separate file, so the student does not see the solutions by accident.
+
+### `Exercises/<N>_<exercise_name>/`
+
+- Up to 10 folders, in order of difficulty. `<N>` starts at `1` and has no leading zero.
+- The `lesson-exercise-writer` agent writes each folder. `/new-lesson` starts the agents one after another. Each agent reads all the theory and the earlier exercises, to keep the difficulty progression.
+- Each folder has an `exercise.md` with the title, goal, requirements, examples with the exact expected output, a "How to verify" section, and optional hints. It has no solution.
+- Each folder has a verification file (e.g. a test file) that the student runs to test the solution. `exercise.md` gives the command. For an exercise that cannot be tested automatically, the folder has a `checklist.md`.
+- A folder can also have a starter file with `TODO` markers. The student writes the code in this folder.
+
+### `quiz.md`
+
+- Up to 10 numbered questions about all the theory topics of the lesson.
+- Each question has a `**Your answer:**` line. The student writes the answer there.
+- The answer key is at the end, in a collapsed block:
+
+```markdown
+<details><summary>Answer key</summary>
+
+1. B — one-line explanation.
+...
+
+</details>
+```
+
+### `progress.json`
+
+```json
+{
+  "completed": false,
+  "exercises": [
+    { "name": "1_<first_exercise_name>", "completed": false },
+    { "name": "2_<second_exercise_name>", "completed": false }
+  ],
+  "isQuizCompleted": false
+}
+```
+
+- `exercises[].name` is the exact exercise folder name.
+- `/check-lesson` sets an exercise to `true` when the code is correct.
+- `/check-lesson` sets `isQuizCompleted` to `true` when all questions have an answer, even if some answers are wrong.
+- `completed` becomes `true` when all exercises and the quiz are complete.
+
+## Projects
+
+### Folder name: `Projects/<project_name>/`
+
+`<project_name>` is a short `snake_case` name.
+
+### `project_description.md`
+
+The project specification. It has these sections:
+
+- Overview
+- Concepts practiced
+- Requirements: a numbered list (`R1`, `R2`, …). `/check-project` checks each one.
+- Expected behavior
+- Suggested structure (optional)
+- Constraints
+- Stretch goals (optional, they do not block completion)
+
+### `progress.json`
+
+```json
+{
+  "completed": false
+}
+```
+
+`/check-project` sets `completed` to `true` when all numbered requirements are met.
+
+### Student code
+
+The student adds all other files in the project folder. `/check-project` reads every file except `project_description.md` and `progress.json`.
