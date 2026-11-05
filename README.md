@@ -94,17 +94,19 @@ Run `/bootstrap`. You can add the subject and your background after the command.
 The bootstrap skill does these steps:
 
 1. It asks for the facts that it does not have: the subject, your technical level, your familiarity with the subject, and your goal.
-2. It asks you to confirm the version of the subject and the scope.
-3. It shows a summary. You confirm it.
-4. It creates `state.json` with your study profile.
-5. It starts the `roadmap-builder` agent. The agent creates `ROADMAP.md`.
-6. It creates `PROGRESS.md`, a checklist that follows `ROADMAP.md`.
+2. It asks for your operating system. It also asks if you need instructions to set up the development environment, and for your preferences (for example, an editor or IDE).
+3. It asks you to confirm the version of the subject and the scope.
+4. It shows a summary. You confirm it.
+5. It creates `state.json` with your study profile.
+6. It writes your operating system in `CLAUDE.md`, in the `## Study environment` section.
+7. It starts the `roadmap-builder` agent. The agent creates `ROADMAP.md`. If you need the setup instructions, lesson 1.1 is the setup of the development environment on your operating system.
+8. It creates `PROGRESS.md`, a checklist that follows `ROADMAP.md`.
 
 You can edit `ROADMAP.md` and `PROGRESS.md` after bootstrap.
 
 ### 7. Optional: add teaching guidance
 
-Write a `CLAUDE.md` file at the root of `java-study`. Put your teaching preferences in it. For example: "Compare each Java concept to TypeScript." `/new-lesson` follows this file when it writes the theory.
+Bootstrap creates `CLAUDE.md` at the root of `java-study`, with your operating system. Add your teaching preferences to it. Do not remove the `## Study environment` section. For example: "Compare each Java concept to TypeScript." `/new-lesson` follows this file when it writes the theory.
 
 ### 8. Commit the setup
 
