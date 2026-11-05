@@ -74,7 +74,7 @@ Structure:
 
 ## 1. <Exercise title>
 
-<Task, in 2 to 5 sentences. Say what to write and how to run it.>
+<Task, in 2 to 5 sentences. Say what to write, the name of the file to save in this topic folder, and how to run it.>
 
 **Expected result:**
 
