@@ -224,7 +224,7 @@ The file ends with a "Common pitfalls" list, a "Key takeaways" list, and a "Furt
 
 #### `practice.md`
 
-Two small exercises about the topic, each with the expected result and a hint in a collapsed block. The student does them right after the theory. They are not graded and are not in `progress.json`.
+Two small exercises about the topic, each with the expected result and a hint in a collapsed block. The student does them right after the theory. They are not graded. When the student finishes them, the topic is complete in `progress.json`.
 
 #### `practice-solution.md`
 
@@ -258,6 +258,10 @@ The solutions of the two exercises in `practice.md`, with a short explanation. I
 ```json
 {
   "completed": false,
+  "theory": [
+    { "name": "1_<first_topic>", "completed": false },
+    { "name": "2_<second_topic>", "completed": false }
+  ],
   "exercises": [
     { "name": "1_<first_exercise_name>", "completed": false },
     { "name": "2_<second_exercise_name>", "completed": false }
@@ -266,10 +270,12 @@ The solutions of the two exercises in `practice.md`, with a short explanation. I
 }
 ```
 
+- `theory[].name` is the exact theory topic folder name.
+- `/check-lesson` sets a theory topic to `true` when all the exercises in its `practice.md` are done and correct.
 - `exercises[].name` is the exact exercise folder name.
 - `/check-lesson` sets an exercise to `true` when the code is correct.
 - `/check-lesson` sets `isQuizCompleted` to `true` when all questions have an answer, even if some answers are wrong.
-- `completed` becomes `true` when all exercises and the quiz are complete.
+- `completed` becomes `true` when all theory topics, all exercises and the quiz are complete.
 
 ## Projects
 
