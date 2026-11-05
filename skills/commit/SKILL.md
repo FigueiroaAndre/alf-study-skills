@@ -1,6 +1,6 @@
 ---
 name: commit
-description: Commit the current changes of the study repository, with a subject line only (no body, no footer). Split the changes into one commit per logical change. A change that records study progress (a theory topic, an exercise, the quiz, a lesson or a project is complete, or the student worked on one) gets a progress commit with a fixed template, so the git history shows the progress of the student. Progress commits are atomic: one commit per progression. If the study repository is not a git repository, or git has no user name or email, do nothing. All other changes (skills, CLAUDE.md, new lessons, and so on) get a Conventional Commits subject line. Use when the user runs /commit or asks to commit in the study repository, and after /check-lesson or /check-project.
+description: Commit the current changes of the study repository, with a subject line only (no body, no footer). Split the changes into one commit per logical change. A change that records study progress (a theory topic, an exercise, the quiz, a lesson or a project is complete, or the student worked on one) gets a progress commit with a fixed template, so the git history shows the progress of the student. Progress commits are atomic: one commit per progression. If the study repository is not a git repository, or git has no user name or email, do nothing. All other changes (skills, CLAUDE.md, new lessons, and so on) get a Conventional Commits subject line. Use when the user runs /commit or asks to commit in the study repository, when the check-progress skill invokes it, and after /check-project.
 argument-hint: [optional note about what to commit]
 ---
 
@@ -41,7 +41,7 @@ A progress change is a change that records the work of the student. Find them in
 - `Lessons/<NN>_<subject>/progress.json` and `Projects/<project_name>/progress.json`: compare each file with its version in `HEAD` (`git show HEAD:<path>`). If the file is untracked, compare it with a file where all values are `false`.
 - The student's files: the code in `Exercises/<N>_<name>/`, the answers in `quiz.md`, the student's work in `Theory/<N>_<topic>/`, and the code in `Projects/<project_name>/`.
 
-A value that changes from `false` to `true` is a **completion**. Only `progress.json` decides a completion. Do not decide that an item is complete from the student's code. The `/check-lesson` and `/check-project` commands set these values.
+A value that changes from `false` to `true` is a **completion**. Only `progress.json` decides a completion. Do not decide that an item is complete from the student's code. The `check-progress` skill and the `/check-project` command set these values.
 
 | Change in `progress.json` | Completion |
 | --- | --- |
@@ -121,7 +121,7 @@ All changes that are not progress changes use a Conventional Commits subject lin
 
 ## 7. Split a `progress.json` file
 
-One `progress.json` file often has more than one completion, for example after `/check-lesson`. Each completion must have its own commit. Do these steps for each `progress.json` file with more than one completion:
+One `progress.json` file often has more than one completion, for example after `/check-progress`. Each completion must have its own commit. Do these steps for each `progress.json` file with more than one completion:
 
 1. Copy the final file to the scratchpad directory. This is the final version.
 2. Start from the version in `HEAD` (or from all values `false`, if the file is untracked).

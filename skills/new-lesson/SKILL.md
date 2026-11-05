@@ -162,7 +162,7 @@ Do not change `state.json`. Step 10 offers to select the new lesson.
 - Each exercise folder has `exercise.md` and a verification file. No exercise folder has a solution.
 - `quiz.md` has 10 questions or fewer. The code snippets in it give the results that the answer key says. Run them if you are not sure.
 - `progress.json` lists every theory folder and every exercise folder. `progress.json` is valid JSON.
-- Do not edit `ROADMAP.md`, `PROGRESS.md` or `state.json`. `/check-lesson` checks the `PROGRESS.md` items when the lesson is complete.
+- Do not edit `ROADMAP.md`, `PROGRESS.md` or `state.json`. `/check-progress` checks the `PROGRESS.md` items when the lesson is complete.
 
 ## 9. Report
 

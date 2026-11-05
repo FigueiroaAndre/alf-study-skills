@@ -102,4 +102,4 @@ Reply with:
 
 - The lesson that is now current, and what it covers.
 - The lesson that was current before, and if it was complete.
-- The next step: study the theory in `Theory/`, do the exercises, then run `/check-lesson`.
+- The next step: study the theory in `Theory/`, do the exercises, then run `/check-progress`.
