@@ -22,7 +22,7 @@ Select the current lesson of the study repository. All paths below are relative 
 - List the folders in `Lessons/`. For each lesson folder, find:
   - If it is complete: `completed` in its `progress.json`. If the file is missing, the lesson is not complete.
   - Which roadmap subsection it covers: the `**Covers:**` line of `Theory/1_*/theory.md` (or of `theory.md` for an older lesson with no `Theory/` folder). If no file has a `**Covers:**` line, match the folder name to the closest roadmap subsection title. `**Covers:** none` means that the lesson is not in the roadmap.
-- Find the **current lesson**: `lesson.current`, if it is set and its folder exists. Otherwise there is no current lesson. A current lesson is **not complete** if its `progress.json` has `completed: false`. In that case, also note what is not done: the exercises that are not complete, and if the quiz is not complete.
+- Find the **current lesson**: `lesson.current`, if it is set and its folder exists. Otherwise there is no current lesson. A current lesson is **not complete** if its `progress.json` has `completed: false`. In that case, also note what is not done: the theory topics that are not complete, the exercises that are not complete, and if the quiz is not complete.
 
 If `$ARGUMENTS` contains `--yes`, remove it from the arguments and remember it. It means that the user already confirmed the change (for example, in `/new-lesson`).
 
