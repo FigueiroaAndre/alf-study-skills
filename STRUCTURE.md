@@ -37,20 +37,20 @@ This file describes the folders and files that the commands in `commands/`, the 
 
 ## Which command touches which file
 
-| File | `/bootstrap` | `/new-lesson` | `/select-lesson` | `/check-progress` | `/new-project` | `/check-project` | `/commit` |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| `CLAUDE.md` | **create** | read | read | – | – | – | – |
-| `ROADMAP.md` | **create** (with the `roadmap-builder` agent) | read | read | – | – | – | – |
-| `PROGRESS.md` | **create** | read | – | **update** (check items) | read | – | – |
-| `state.json` | **create** | read `lesson` (only to ask to select the new lesson) | **create / update** `lesson` | **update** `lesson` | **create / update** `project` | **update** `project` | – |
-| `Lessons/<NN>_<subject>/Theory/<N>_<topic>/theory.md` | – | **create** (with the `lesson-theory-writer` agent) | read (`**Covers:**` line) | read | read | read | – |
-| `Lessons/<NN>_<subject>/Theory/<N>_<topic>/practice.md` and `practice-solution.md` | – | **create** (with the `lesson-theory-writer` agent) | – | read (with the `lesson-checker` agent) | – | – | – |
-| `Lessons/<NN>_<subject>/Theory/<N>_<topic>/` (the student's practice files) | – | – | – | read (with the `lesson-checker` agent) | – | – | read (to find work in progress) |
-| `Lessons/<NN>_<subject>/quiz.md` | – | **create** | – | read | – | – | – |
-| `Lessons/<NN>_<subject>/progress.json` | – | **create** | read | **update** | – | – | read (to find progress commits) |
-| `Lessons/<NN>_<subject>/Exercises/<N>_<name>/exercise.md` and verification file | – | **create** (with the `lesson-exercise-writer` agent) | – | read | – | – | – |
-| `Projects/<project_name>/project_description.md` | – | – | – | – | **create** | read | – |
-| `Projects/<project_name>/progress.json` | – | – | – | – | **create** | **update** | read (to find progress commits) |
+| File | `/bootstrap` | `/new-lesson` | `/select-lesson` | `/check-progress` | `/commit` |
+| --- | --- | --- | --- | --- | --- |
+| `CLAUDE.md` | **create** | read | read | – | – |
+| `ROADMAP.md` | **create** (with the `roadmap-builder` agent) | read | read | – | – |
+| `PROGRESS.md` | **create** | read | – | **update** (check items) | – |
+| `state.json` | **create** | read `lesson` (only to ask to select the new lesson) | **create / update** `lesson` | **update** `lesson` | – |
+| `Lessons/<NN>_<subject>/Theory/<N>_<topic>/theory.md` | – | **create** (with the `lesson-theory-writer` agent) | read (`**Covers:**` line) | read | – |
+| `Lessons/<NN>_<subject>/Theory/<N>_<topic>/practice.md` and `practice-solution.md` | – | **create** (with the `lesson-theory-writer` agent) | – | read (with the `lesson-checker` agent) | – |
+| `Lessons/<NN>_<subject>/Theory/<N>_<topic>/` (the student's practice files) | – | – | – | read (with the `lesson-checker` agent) | read (to find work in progress) |
+| `Lessons/<NN>_<subject>/quiz.md` | – | **create** | – | read | – |
+| `Lessons/<NN>_<subject>/progress.json` | – | **create** | read | **update** | read (to find progress commits) |
+| `Lessons/<NN>_<subject>/Exercises/<N>_<name>/exercise.md` and verification file | – | **create** (with the `lesson-exercise-writer` agent) | – | read | – |
+| `Projects/<project_name>/project_description.md` | – | – | – | – | – |
+| `Projects/<project_name>/progress.json` | – | – | – | – | read (to find progress commits) |
 
 `/commit` does not change the files. It only reads them to write the commit messages. To split the completions of one `progress.json` file into separate commits, it writes the file step by step, and the last step restores the final version.
 
@@ -114,7 +114,6 @@ How the commands use it:
 
 - `/new-lesson` reads the checked items to know what the user already studied. It does not use the checkboxes to choose the next lesson.
 - `/check-progress` changes `- [ ]` to `- [x]` for every item in the subsection when the lesson is complete. If all subsections of a `###` section are checked, it also checks the section in "Section Summary". It never unchecks an item.
-- `/new-project` uses the checked items to decide what the student already knows.
 
 ### `ROADMAP.md`
 
@@ -179,7 +178,7 @@ You can edit the study profile, and you can add teaching guidance to this file. 
 
 ### `state.json`
 
-This file points to the current lesson and the current project. `/bootstrap` creates it. If it does not exist, `/select-lesson` or `/new-project` creates it.
+This file points to the current lesson and the current project. `/bootstrap` creates it. If it does not exist, `/select-lesson` creates it.
 
 `/new-lesson` does not change it, so you can create more lessons in advance. At the end, `/new-lesson` asks if you want to select the new lesson. `/select-lesson` sets `lesson.current`. With no argument, it selects the next lesson of the roadmap. It warns you if the current lesson is not complete. If the lesson does not exist, it offers to create it with `/new-lesson`.
 
@@ -199,7 +198,7 @@ This file points to the current lesson and the current project. `/bootstrap` cre
 - `/bootstrap` sets `lesson.current` and `project.current` to `null`.
 - `current` is a path relative to the repository root, or `null`.
 - `completed` is a copy of the `completed` value in the `progress.json` of that folder. The `progress.json` file is the source of truth. The check commands correct `state.json` if the two values are different.
-- A selected lesson or a new project replaces `current`. The old folder and its `progress.json` stay as they are.
+- A selected lesson replaces `lesson.current`. The old folder and its `progress.json` stay as they are.
 
 ## Lessons
 
@@ -284,6 +283,8 @@ The solutions of the two exercises in `practice.md`, with a short explanation. I
 
 ## Projects
 
+No skill creates or checks projects yet. This section describes the planned format. `bootstrap`, `select-lesson` and `commit` already use it.
+
 ### Folder name: `Projects/<project_name>/`
 
 `<project_name>` is a short `snake_case` name.
@@ -294,7 +295,7 @@ The project specification. It has these sections:
 
 - Overview
 - Concepts practiced
-- Requirements: a numbered list (`R1`, `R2`, …). `/check-project` checks each one.
+- Requirements: a numbered list (`R1`, `R2`, …). The project check checks each one.
 - Expected behavior
 - Suggested structure (optional)
 - Constraints
@@ -308,8 +309,8 @@ The project specification. It has these sections:
 }
 ```
 
-`/check-project` sets `completed` to `true` when all numbered requirements are met.
+The project check sets `completed` to `true` when all numbered requirements are met.
 
 ### Student code
 
-The student adds all other files in the project folder. `/check-project` reads every file except `project_description.md` and `progress.json`.
+The student adds all other files in the project folder. The project check reads every file except `project_description.md` and `progress.json`.

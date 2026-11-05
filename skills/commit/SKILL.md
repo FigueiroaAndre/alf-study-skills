@@ -1,6 +1,6 @@
 ---
 name: commit
-description: Commit the current changes of the study repository, with a subject line only (no body, no footer). Split the changes into one commit per logical change. A change that records study progress (a theory topic, an exercise, the quiz, a lesson or a project is complete, or the student worked on one) gets a progress commit with a fixed template, so the git history shows the progress of the student. Progress commits are atomic: one commit per progression. If the study repository is not a git repository, or git has no user name or email, do nothing. All other changes (skills, CLAUDE.md, new lessons, and so on) get a Conventional Commits subject line. Use when the user runs /commit or asks to commit in the study repository, when the check-progress skill invokes it, and after /check-project.
+description: Commit the current changes of the study repository, with a subject line only (no body, no footer). Split the changes into one commit per logical change. A change that records study progress (a theory topic, an exercise, the quiz, a lesson or a project is complete, or the student worked on one) gets a progress commit with a fixed template, so the git history shows the progress of the student. Progress commits are atomic: one commit per progression. If the study repository is not a git repository, or git has no user name or email, do nothing. All other changes (skills, CLAUDE.md, new lessons, and so on) get a Conventional Commits subject line. Use when the user runs /commit or asks to commit in the study repository, and when the check-progress skill invokes it.
 argument-hint: [optional note about what to commit]
 ---
 
@@ -41,7 +41,7 @@ A progress change is a change that records the work of the student. Find them in
 - `Lessons/<NN>_<subject>/progress.json` and `Projects/<project_name>/progress.json`: compare each file with its version in `HEAD` (`git show HEAD:<path>`). If the file is untracked, compare it with a file where all values are `false`.
 - The student's files: the code in `Exercises/<N>_<name>/`, the answers in `quiz.md`, the student's work in `Theory/<N>_<topic>/`, and the code in `Projects/<project_name>/`.
 
-A value that changes from `false` to `true` is a **completion**. Only `progress.json` decides a completion. Do not decide that an item is complete from the student's code. The `check-progress` skill and the `/check-project` command set these values.
+A value that changes from `false` to `true` is a **completion**. Only `progress.json` decides a completion. Do not decide that an item is complete from the student's code. The `check-progress` skill sets these values.
 
 | Change in `progress.json` | Completion |
 | --- | --- |
@@ -96,7 +96,7 @@ All changes that are not progress changes use a Conventional Commits subject lin
 - Use a standard type: `feat`, `fix`, `docs`, `refactor`, `chore`, `style`, `test`, `perf`, `build`, `ci`.
 - Examples:
   - A new lesson from `/new-lesson`: `feat(lessons): add lesson 03_records`
-  - A new project from `/new-project`: `feat(projects): add project library_manager`
+  - A new project: `feat(projects): add project library_manager`
   - A change to `ROADMAP.md` or `PROGRESS.md` by the user: `docs: add pattern matching to roadmap`
   - A change to `CLAUDE.md`: `docs: add teaching guidance to CLAUDE.md`
   - An update of the installed skills in `.claude/`: `chore: update study skills`

@@ -1,6 +1,6 @@
 # alf-study-skills
 
-A collection of Claude Code commands, skills, and agents. They help you study a technical subject in a dedicated **study repository**. Claude writes lessons, exercises, quizzes, and projects for you. Then it checks your work and records your progress.
+A collection of Claude Code commands, skills, and agents. They help you study a technical subject in a dedicated **study repository**. Claude writes lessons, exercises, and quizzes for you. Then it checks your work and records your progress.
 
 ## What you need
 
@@ -122,8 +122,6 @@ After setup, use these commands in a loop:
 | `/new-lesson [subject]` | Creates a lesson: theory topics with small practice exercises, exercises with test files, and a quiz. With no subject, it uses the next `ROADMAP.md` subsection that has no lesson in `Lessons/`. It does not change the current lesson. At the end, it asks if you want to select the new lesson. |
 | `/select-lesson [lesson]` | Selects the current lesson, for `/check-progress`. You can give a folder name, a lesson number, a roadmap subsection, or a subject. With no argument, it selects the next lesson of the roadmap. If the current lesson is not complete, it asks if you want to keep it. If the lesson does not exist, it offers to create it with `/new-lesson`. |
 | `/check-progress [request]` | Checks the current lesson: the practice of each theory topic, the exercises, and the quiz. One `lesson-checker` agent checks each theory topic and each exercise, and one agent checks the whole quiz. The agents run in parallel. It gives feedback and updates your progress. At the end, it runs `/commit` to record your progress. It does not give the solution of an exercise, unless you ask for it. |
-| `/new-project [idea]` | Creates a project description from what you studied. You write the code. |
-| `/check-project` | Checks your project against its requirements and updates your progress. |
 | `/commit` | Commits your changes. Each completed theory topic, exercise, quiz, lesson, or project gets its own progress commit. All other changes get a Conventional Commits subject line. If git is not set up, it does nothing. |
 
 ### Track your progress with git
