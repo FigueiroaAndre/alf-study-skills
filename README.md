@@ -122,7 +122,8 @@ After setup, use these commands in a loop:
 
 | Command | What it does |
 | --- | --- |
-| `/new-lesson [subject]` | Creates a lesson: theory topics with small practice exercises, exercises with test files, and a quiz. With no subject, it uses the next `ROADMAP.md` subsection that has no lesson in `Lessons/`. |
+| `/new-lesson [subject]` | Creates a lesson: theory topics with small practice exercises, exercises with test files, and a quiz. With no subject, it uses the next `ROADMAP.md` subsection that has no lesson in `Lessons/`. It does not change the current lesson. At the end, it asks if you want to select the new lesson. |
+| `/select-lesson [lesson]` | Selects the current lesson, for `/check-lesson`. You can give a folder name, a lesson number, a roadmap subsection, or a subject. With no argument, it selects the next lesson of the roadmap. If the current lesson is not complete, it asks if you want to keep it. If the lesson does not exist, it offers to create it with `/new-lesson`. |
 | `/check-lesson` | Checks your exercises and quiz answers. It gives feedback and updates your progress. |
 | `/new-project [idea]` | Creates a project description from what you studied. You write the code. |
 | `/check-project` | Checks your project against its requirements and updates your progress. |

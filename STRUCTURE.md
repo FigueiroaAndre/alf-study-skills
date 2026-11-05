@@ -37,19 +37,19 @@ This file describes the folders and files that the commands in `commands/`, the 
 
 ## Which command touches which file
 
-| File | `/bootstrap` | `/new-lesson` | `/check-lesson` | `/new-project` | `/check-project` |
-| --- | --- | --- | --- | --- | --- |
-| `CLAUDE.md` | **create** | read | – | – | – |
-| `ROADMAP.md` | **create** (with the `roadmap-builder` agent) | read | – | – | – |
-| `PROGRESS.md` | **create** | read | **update** (check items) | read | – |
-| `state.json` | **create** | **create / update** `lesson` (not read) | **update** `lesson` | **create / update** `project` | **update** `project` |
-| `Lessons/<NN>_<subject>/Theory/<N>_<topic>/theory.md` | – | **create** (with the `lesson-theory-writer` agent) | read | read | read |
-| `Lessons/<NN>_<subject>/Theory/<N>_<topic>/practice.md` and `practice-solution.md` | – | **create** (with the `lesson-theory-writer` agent) | – | – | – |
-| `Lessons/<NN>_<subject>/quiz.md` | – | **create** | read | – | – |
-| `Lessons/<NN>_<subject>/progress.json` | – | **create** | **update** | – | – |
-| `Lessons/<NN>_<subject>/Exercises/<N>_<name>/exercise.md` and verification file | – | **create** (with the `lesson-exercise-writer` agent) | read | – | – |
-| `Projects/<project_name>/project_description.md` | – | – | – | **create** | read |
-| `Projects/<project_name>/progress.json` | – | – | – | **create** | **update** |
+| File | `/bootstrap` | `/new-lesson` | `/select-lesson` | `/check-lesson` | `/new-project` | `/check-project` |
+| --- | --- | --- | --- | --- | --- | --- |
+| `CLAUDE.md` | **create** | read | read | – | – | – |
+| `ROADMAP.md` | **create** (with the `roadmap-builder` agent) | read | read | – | – | – |
+| `PROGRESS.md` | **create** | read | – | **update** (check items) | read | – |
+| `state.json` | **create** | read `lesson` (only to ask to select the new lesson) | **create / update** `lesson` | **update** `lesson` | **create / update** `project` | **update** `project` |
+| `Lessons/<NN>_<subject>/Theory/<N>_<topic>/theory.md` | – | **create** (with the `lesson-theory-writer` agent) | read (`**Covers:**` line) | read | read | read |
+| `Lessons/<NN>_<subject>/Theory/<N>_<topic>/practice.md` and `practice-solution.md` | – | **create** (with the `lesson-theory-writer` agent) | – | – | – | – |
+| `Lessons/<NN>_<subject>/quiz.md` | – | **create** | – | read | – | – |
+| `Lessons/<NN>_<subject>/progress.json` | – | **create** | read | **update** | – | – |
+| `Lessons/<NN>_<subject>/Exercises/<N>_<name>/exercise.md` and verification file | – | **create** (with the `lesson-exercise-writer` agent) | – | read | – | – |
+| `Projects/<project_name>/project_description.md` | – | – | – | – | **create** | read |
+| `Projects/<project_name>/progress.json` | – | – | – | – | **create** | **update** |
 
 The check commands never change the student's code or the student's answers in `quiz.md`. They put temporary test files in the scratchpad directory, not in the study repository.
 
@@ -174,7 +174,9 @@ You can edit the study profile, and you can add teaching guidance to this file. 
 
 ### `state.json`
 
-This file points to the current lesson and the current project. `/bootstrap` creates it. If it does not exist, `/new-lesson` or `/new-project` creates it. `/new-lesson` does not read it to choose the next lesson. It only sets `lesson.current` to the new lesson.
+This file points to the current lesson and the current project. `/bootstrap` creates it. If it does not exist, `/select-lesson` or `/new-project` creates it.
+
+`/new-lesson` does not change it, so you can create more lessons in advance. At the end, `/new-lesson` asks if you want to select the new lesson. `/select-lesson` sets `lesson.current`. With no argument, it selects the next lesson of the roadmap. It warns you if the current lesson is not complete. If the lesson does not exist, it offers to create it with `/new-lesson`.
 
 ```json
 {
@@ -192,7 +194,7 @@ This file points to the current lesson and the current project. `/bootstrap` cre
 - `/bootstrap` sets `lesson.current` and `project.current` to `null`.
 - `current` is a path relative to the repository root, or `null`.
 - `completed` is a copy of the `completed` value in the `progress.json` of that folder. The `progress.json` file is the source of truth. The check commands correct `state.json` if the two values are different.
-- A new lesson or project replaces `current`. The old folder stays as it is.
+- A selected lesson or a new project replaces `current`. The old folder and its `progress.json` stay as they are.
 
 ## Lessons
 
