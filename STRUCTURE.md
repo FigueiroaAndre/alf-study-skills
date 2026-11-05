@@ -9,6 +9,7 @@ This file describes the folders and files that the commands in `commands/`, the 
 ├── CLAUDE.md                  # Created by /bootstrap. Study profile, study environment and language rule. You can add teaching guidance.
 ├── ROADMAP.md                 # Created by /bootstrap (roadmap-builder agent). Detailed scope per subject.
 ├── PROGRESS.md                # Created by /bootstrap. Checklist of subjects to study.
+├── README.md                  # Created by /bootstrap (from skills/bootstrap/assets/README.md, in the profile language). How to use the skills.
 ├── state.json                 # Created by /bootstrap. Current lesson and current project.
 ├── Lessons/
 │   └── <NN>_<subject>/        # One folder per lesson, e.g. 03_records/
@@ -42,6 +43,7 @@ This file describes the folders and files that the commands in `commands/`, the 
 | `CLAUDE.md` | **create** | read | read | – | – |
 | `ROADMAP.md` | **create** (with the `roadmap-builder` agent) | read | read | – | – |
 | `PROGRESS.md` | **create** | read | – | **update** (check items) | – |
+| `README.md` | **create** (from `skills/bootstrap/assets/README.md`, translated to the profile language) | – | – | – | – |
 | `state.json` | **create** | read `lesson` (only to ask to select the new lesson) | **create / update** `lesson` | **update** `lesson` | – |
 | `Lessons/<NN>_<subject>/Theory/<N>_<topic>/theory.md` | – | **create** (with the `lesson-theory-writer` agent) | read (`**Covers:**` line) | read | – |
 | `Lessons/<NN>_<subject>/Theory/<N>_<topic>/practice.md` and `practice-solution.md` | – | **create** (with the `lesson-theory-writer` agent) | – | read (with the `lesson-checker` agent) | – |

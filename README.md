@@ -102,6 +102,7 @@ The bootstrap skill does these steps:
 7. It creates `state.json`. This file tracks the current lesson and the current project.
 8. It starts the `roadmap-builder` agent. The agent creates `ROADMAP.md`. If you need the setup instructions, lesson 1.1 is the setup of the development environment on your operating system.
 9. It creates `PROGRESS.md`, a checklist that follows `ROADMAP.md`.
+10. It writes `README.md` in the study repository. This file tells you how to use the skills, so you do not have to come back to this repository. If your language is not English, it translates the file to your language.
 
 You can edit `ROADMAP.md` and `PROGRESS.md` after bootstrap.
 

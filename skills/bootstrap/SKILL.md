@@ -1,10 +1,10 @@
 ---
 name: bootstrap
-description: Set up a study repository for a new subject. Ask the user their language, then what they want to study, their current experience, and their goals. Also ask their operating system and whether they need help to set up the development environment. Then create CLAUDE.md (study profile, study environment and language rule), state.json, ROADMAP.md (with the roadmap-builder agent) and PROGRESS.md. Use when the user runs /bootstrap or wants to start studying a new subject in an empty repository.
+description: Set up a study repository for a new subject. Ask the user their language, then what they want to study, their current experience, and their goals. Also ask their operating system and whether they need help to set up the development environment. Then create CLAUDE.md (study profile, study environment and language rule), state.json, ROADMAP.md (with the roadmap-builder agent), PROGRESS.md, and README.md (from the assets of this skill, translated to the user's language). Use when the user runs /bootstrap or wants to start studying a new subject in an empty repository.
 argument-hint: [subject and any extra information]
 ---
 
-Set up the study profile, the roadmap, and the progress checklist of the study repository. The formats of `CLAUDE.md`, `state.json`, `ROADMAP.md` and `PROGRESS.md` are described in `STRUCTURE.md` of the study skills repository. All paths below are relative to the root of the **study repository** (the current working directory).
+Set up the study profile, the roadmap, the progress checklist, and the usage guide of the study repository. The formats of `CLAUDE.md`, `state.json`, `ROADMAP.md` and `PROGRESS.md` are described in `STRUCTURE.md` of the study skills repository. All paths below are relative to the root of the **study repository** (the current working directory).
 
 The study profile has three parts. All three go in the `## Study profile` section of `CLAUDE.md`:
 
@@ -16,7 +16,7 @@ The study profile has three parts. All three go in the `## Study profile` sectio
 
 If `CLAUDE.md` exists and has a `## Study profile` section with a `**Subject of study:**` line, the repository is already set up. Tell the user the current subject and ask (with the question tool) whether to set it up again. Offer "Yes, start over" and "No, keep the current setup". On "No" (or no answer), stop.
 
-If `ROADMAP.md` or `PROGRESS.md` exist, ask (in the same question tool call) whether to replace them. If the user keeps a file, skip the step that writes it.
+If `ROADMAP.md`, `PROGRESS.md` or `README.md` exist, ask (in the same question tool call) whether to replace them. If the user keeps a file, skip the step that writes it.
 
 ## 1. Find the language
 
@@ -274,18 +274,34 @@ Rules:
 - "Section Summary" is the last `##` heading. It has one `- [ ]` item per `###` section, in order, with the section number and title.
 - All boxes are unchecked.
 
-## 9. Verify
+## 9. Write `README.md`
+
+`README.md` tells the user how to use the skills in the study repository. Its content does not depend on the study profile, so you do not write new content. The source is the file `assets/README.md` in the folder of this skill (the folder of this `SKILL.md`). It is in English, with about 80% of ASD-STE100.
+
+If the language is English, copy the file to the root of the study repository. Copy it exactly. Do not change it.
+
+For other languages, translate the file to the language and variant of the study profile. Write the translation to the root of the study repository. Follow the language rule that you wrote in `CLAUDE.md` in step 5: use about 80% of the adaptation of ASD-STE100 to that language, with the same adaptations. Also follow these rules:
+
+- Translate all the text: headings, paragraphs, lists, table cells, and the text in quotes (e.g. the examples of teaching preferences).
+- Do not translate technical terms (e.g. "commit", "theory", "quiz" can stay in English if the field uses them).
+- Do not change the content of code blocks, commands, skill names (e.g. `/new-lesson`), and the commit template. One exception: translate the `#` comments in the folder tree.
+- Do not translate the names of files and folders. The folder structure of the study repository is always in English, in all languages. Keep each name exactly as it is in the source: in code blocks, in tables, in backticks, and in the text. This includes all the names in the folder tree, also the placeholders in `<>` (e.g. `Lessons/`, `02_<subject>/`, `Theory/`, `1_<topic>/`, `<test file>`, `practice-solution.md`). You can translate the words around a name, e.g. "the topic folder in `Theory/`".
+- Keep the section names of `CLAUDE.md` in English (`## Study profile`, `## Study environment`), because `CLAUDE.md` is in English.
+- Keep the fixed markers in English: `## BEGINNER`, `## INTERMEDIATE`, `## ADVANCED`, `## Section Summary`, `Practice:`, `**Covers:**`, `**Your answer:**` and `Answer key`. Translate the names of the other sections of the lesson files (e.g. "How to verify"), because the lesson files use the profile language.
+- Keep the same structure: the same sections, in the same order, with the same tables and code blocks. Do not add or remove information.
+
+## 10. Verify
 
 - Every `####` subsection in `PROGRESS.md` has a matching subsection in `ROADMAP.md`, with the same number and title, under the same level and section. The reverse is also true.
 - Every subsection in `PROGRESS.md` has at least one item.
 - "Section Summary" lists every `###` section.
 
-## 10. Report
+## 11. Report
 
 Reply with:
 
 - The profile: language, subject of study, user context.
 - The operating system, and whether lesson 1.1 is the environment setup.
-- The files you created: `CLAUDE.md`, `state.json`, `ROADMAP.md`, `PROGRESS.md`.
+- The files you created: `CLAUDE.md`, `state.json`, `ROADMAP.md`, `PROGRESS.md`, `README.md`. Tell the user that `README.md` explains how to use the skills.
 - For each level, the list of sections, with the number of subsections in each.
 - Each default that you chose because the user could not answer.
