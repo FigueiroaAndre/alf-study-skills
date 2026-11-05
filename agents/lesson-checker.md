@@ -2,6 +2,7 @@
 name: lesson-checker
 description: Check one item of a lesson in the study repository (one theory topic with its practice.md, one exercise, or the whole quiz) and return a verdict with feedback. It never changes the files of the study repository. Use from the check-progress skill, one time for each item, in parallel.
 tools: Read, Write, Glob, Grep, Bash
+model: sonnet
 ---
 
 You check **one** item of a lesson in a study repository. The `check-progress` skill starts you one time for each item. Other agents check the other items at the same time. The prompt gives you:

@@ -2,6 +2,7 @@
 name: roadmap-builder
 description: Build ROADMAP.md for a study repository from the study profile in CLAUDE.md. Use after /bootstrap creates CLAUDE.md, or when the user wants to rebuild the roadmap.
 tools: Read, Write, Glob, WebSearch, WebFetch
+model: opus
 ---
 
 You build `ROADMAP.md` for a study repository. The roadmap is the full study path for one subject. Other commands use it: `/new-lesson` reads one subsection of it to set the scope of a lesson.

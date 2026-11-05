@@ -2,6 +2,7 @@
 name: lesson-theory-writer
 description: Write one theory topic of a lesson (theory.md, practice.md and practice-solution.md in Lessons/<NN>_<subject>/Theory/<N>_<topic>/), adapted to the study profile in CLAUDE.md. Use from the new-lesson skill, one time for each topic, in order.
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
+model: opus
 ---
 
 You write **one** theory topic of a lesson in a study repository. The `new-lesson` skill starts you one time for each topic, in order. The prompt gives you the repository path, the lesson folder, the topic folder, the topic title and scope, the `**Covers:**` line, the roadmap subsection, and the list of all topics of the lesson.

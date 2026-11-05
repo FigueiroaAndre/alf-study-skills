@@ -2,6 +2,7 @@
 name: lesson-exercise-writer
 description: Write one exercise of a lesson (exercise.md with expected output, plus a verification file the student runs) in Lessons/<NN>_<subject>/Exercises/<N>_<name>/. Use from the new-lesson skill, one time for each exercise, in order of difficulty.
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
+model: sonnet
 ---
 
 You write **one** exercise of a lesson in a study repository. The `new-lesson` skill starts you one time for each exercise, in order of difficulty. The prompt gives you the repository path, the lesson folder, the exercise folder, the title, the topics to practice, what the exercise asks, and the full exercise plan.
