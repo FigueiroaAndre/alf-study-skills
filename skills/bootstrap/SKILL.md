@@ -14,7 +14,7 @@ The study profile has three parts. All three go in the `## Study profile` sectio
 
 ## 0. Check what already exists
 
-If `CLAUDE.md` exists and has a `## Study profile` section with a `**Subject of study:**` line, the repository is already set up. Tell the user the current subject and ask (with the question tool) whether to set it up again. Offer "Yes, start over" and "No, keep the current setup". On "No" (or no answer), stop.
+If `CLAUDE.md` exists and has a `## Study profile` section with a `**Subject of study:**` line, the repository is already set up. If the user wants to update a repository that an older version of the skills set up, tell them to use `/bootstrap-update` instead. Tell the user the current subject and ask (with the question tool) whether to set it up again. Offer "Yes, start over" and "No, keep the current setup". On "No" (or no answer), stop.
 
 If `ROADMAP.md`, `PROGRESS.md` or `README.md` exist, ask (in the same question tool call) whether to replace them. If the user keeps a file, skip the step that writes it.
 

@@ -123,7 +123,9 @@ After setup, use these commands in a loop:
 | `/new-lesson [subject]` | Creates a lesson: theory topics with small practice exercises, exercises with test files, and a quiz. With no subject, it uses the next `ROADMAP.md` subsection that has no lesson in `Lessons/`. It does not change the current lesson. At the end, it asks if you want to select the new lesson. |
 | `/select-lesson [lesson]` | Selects the current lesson, for `/check-progress`. You can give a folder name, a lesson number, a roadmap subsection, or a subject. With no argument, it selects the next lesson of the roadmap. If the current lesson is not complete, it asks if you want to keep it. If the lesson does not exist, it offers to create it with `/new-lesson`. |
 | `/check-progress [request]` | Checks the current lesson: the practice of each theory topic, the exercises, and the quiz. One `lesson-checker` agent checks each theory topic and each exercise, and one agent checks the whole quiz. The agents run in parallel. It gives feedback and updates your progress. At the end, it runs `/commit` to record your progress. It does not give the solution of an exercise, unless you ask for it. |
+| `/teacher [question]` | Helps you learn the subject, at your level. It does not only give the answer: it guides you to it with questions, analogies, and examples. It does not give the solution of an exercise, a practice exercise, or a quiz question. It gives hints instead. If the question is about a lesson that you did not study yet, it tells you, and asks if you want to continue. It does not change files. |
 | `/commit` | Commits your changes. Each completed theory topic, exercise, quiz, lesson, or project gets its own progress commit. All other changes get a Conventional Commits subject line. If git is not set up, it does nothing. |
+| `/bootstrap-update` | Updates a study repository that an older version of the skills set up. See [Update the installed files](#update-the-installed-files). |
 
 ### Track your progress with git
 
@@ -157,3 +159,18 @@ To get a new version, pull `alf-study-skills`. Then run the install script again
 git -C ../alf-study-skills pull
 python3 ../alf-study-skills/scripts/install-claude.py
 ```
+
+A new version can change the structure of the study repository. Then start Claude Code in the study repository, and run `/bootstrap-update`:
+
+```
+/bootstrap-update
+```
+
+The bootstrap-update skill does these steps:
+
+1. It finds what is outdated. For example: the study profile is in `state.json` and not in `CLAUDE.md`, `CLAUDE.md` has no `## Study environment` section, the JSON keys use PascalCase, a `progress.json` file has no `theory` list, `PROGRESS.md` has an old heading format, `README.md` is missing, or old commands are in `.claude/commands/`.
+2. It shows the list of problems and the planned fixes. With `/bootstrap-update --check`, it stops here and changes nothing.
+3. It asks only for the facts that it does not have, with the same questions as `/bootstrap` (for example, your language and your operating system). It also asks before it replaces or deletes a file that you can have changed.
+4. It shows a summary. You confirm it.
+5. It updates the files. It never changes the content of the lessons, and it never removes progress. It changes only `CLAUDE.md`, `state.json`, the `progress.json` files, the headings and the checkboxes of `ROADMAP.md` and `PROGRESS.md`, `README.md`, and the old command files.
+6. It asks if you want to commit the update. It does not make progress commits for the update.

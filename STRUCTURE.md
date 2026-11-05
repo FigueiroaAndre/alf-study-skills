@@ -38,21 +38,25 @@ This file describes the folders and files that the commands in `commands/`, the 
 
 ## Which command touches which file
 
-| File | `/bootstrap` | `/new-lesson` | `/select-lesson` | `/check-progress` | `/commit` |
-| --- | --- | --- | --- | --- | --- |
-| `CLAUDE.md` | **create** | read | read | – | – |
-| `ROADMAP.md` | **create** (with the `roadmap-builder` agent) | read | read | – | – |
-| `PROGRESS.md` | **create** | read | – | **update** (check items) | – |
-| `README.md` | **create** (from `skills/bootstrap/assets/README.md`, translated to the profile language) | – | – | – | – |
-| `state.json` | **create** | read `lesson` (only to ask to select the new lesson) | **create / update** `lesson` | **update** `lesson` | – |
-| `Lessons/<NN>_<subject>/Theory/<N>_<topic>/theory.md` | – | **create** (with the `lesson-theory-writer` agent) | read (`**Covers:**` line) | read | – |
-| `Lessons/<NN>_<subject>/Theory/<N>_<topic>/practice.md` and `practice-solution.md` | – | **create** (with the `lesson-theory-writer` agent) | – | read (with the `lesson-checker` agent) | – |
-| `Lessons/<NN>_<subject>/Theory/<N>_<topic>/` (the student's practice files) | – | – | – | read (with the `lesson-checker` agent) | read (to find work in progress) |
-| `Lessons/<NN>_<subject>/quiz.md` | – | **create** | – | read | – |
-| `Lessons/<NN>_<subject>/progress.json` | – | **create** | read | **update** | read (to find progress commits) |
-| `Lessons/<NN>_<subject>/Exercises/<N>_<name>/exercise.md` and verification file | – | **create** (with the `lesson-exercise-writer` agent) | – | read | – |
-| `Projects/<project_name>/project_description.md` | – | – | – | – | – |
-| `Projects/<project_name>/progress.json` | – | – | – | – | read (to find progress commits) |
+| File | `/bootstrap` | `/bootstrap-update` | `/new-lesson` | `/select-lesson` | `/check-progress` | `/commit` |
+| --- | --- | --- | --- | --- | --- | --- |
+| `CLAUDE.md` | **create** | **update** (add the missing sections and the language rule) | read | read | – | – |
+| `ROADMAP.md` | **create** (with the `roadmap-builder` agent) | **update** (headings only), or create | read | read | – | – |
+| `PROGRESS.md` | **create** | **update** (headings and checkboxes), or create | read | – | **update** (check items) | – |
+| `README.md` | **create** (from `skills/bootstrap/assets/README.md`, translated to the profile language) | **create / replace** | – | – | – | – |
+| `state.json` | **create** | **update** (format and sync) | read `lesson` (only to ask to select the new lesson) | **create / update** `lesson` | **update** `lesson` | – |
+| `Lessons/<NN>_<subject>/Theory/<N>_<topic>/theory.md` | – | – | **create** (with the `lesson-theory-writer` agent) | read (`**Covers:**` line) | read | – |
+| `Lessons/<NN>_<subject>/Theory/<N>_<topic>/practice.md` and `practice-solution.md` | – | – | **create** (with the `lesson-theory-writer` agent) | – | read (with the `lesson-checker` agent) | – |
+| `Lessons/<NN>_<subject>/Theory/<N>_<topic>/` (the student's practice files) | – | – | – | – | read (with the `lesson-checker` agent) | read (to find work in progress) |
+| `Lessons/<NN>_<subject>/quiz.md` | – | – | **create** | – | read | – |
+| `Lessons/<NN>_<subject>/progress.json` | – | **update** (format and missing entries) | **create** | read | **update** | read (to find progress commits) |
+| `Lessons/<NN>_<subject>/Exercises/<N>_<name>/exercise.md` and verification file | – | – | **create** (with the `lesson-exercise-writer` agent) | – | read | – |
+| `Projects/<project_name>/project_description.md` | – | – | – | – | – | – |
+| `Projects/<project_name>/progress.json` | – | **update** (format) | – | – | – | read (to find progress commits) |
+
+`/bootstrap-update` never changes the content of the lessons: the theory, practice, exercise and quiz files, and the student's files. It only changes the format of the files in the table, and it never removes progress.
+
+`/teacher` is not in the table, because it does not change files. It reads `CLAUDE.md`, `ROADMAP.md`, `PROGRESS.md`, `state.json`, and the lesson and project files, to answer the user's questions and to find the lessons that the user did not study yet.
 
 `/commit` does not change the files. It only reads them to write the commit messages. To split the completions of one `progress.json` file into separate commits, it writes the file step by step, and the last step restores the final version.
 

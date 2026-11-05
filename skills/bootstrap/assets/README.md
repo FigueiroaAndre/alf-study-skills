@@ -74,8 +74,10 @@ Then use these commands in a loop:
 | `/new-lesson [subject]` | Creates a lesson. With no subject, it uses the next `ROADMAP.md` subsection that has no lesson. You can also give a subsection number (e.g. `2.3`), a subsection title, or any subject. |
 | `/select-lesson [lesson]` | Selects the current lesson. You can give a folder name, a lesson number, a roadmap subsection, or a subject. With no argument, it selects the next lesson of the roadmap. If the lesson does not exist, it offers to create it. |
 | `/check-progress [request]` | Checks the current lesson: the practice of each theory topic, the exercises, and the quiz. It gives feedback and updates your progress. Then it commits your progress. It does not give the solution of an exercise. To see a solution, ask for it, e.g. `/check-progress show solution for exercise 3`. |
+| `/teacher [question]` | Helps you learn the subject. It does not only give the answer: it guides you to it with questions, analogies, and examples. It does not give the solution of an exercise or a quiz question. It gives hints instead. If the question is about a lesson that you did not study yet, it tells you, and asks if you want to continue. |
 | `/commit` | Commits your changes. Each completed item gets its own progress commit. |
 | `/bootstrap` | Sets up the repository again, e.g. for a new subject. It asks before it replaces a file. |
+| `/bootstrap-update` | Updates this repository to the structure of a new version of the skills. It does not change the content of your lessons. |
 
 You can create more than one lesson in advance. `/new-lesson` does not change the current lesson. `/check-progress` checks only the current lesson.
 
@@ -94,6 +96,8 @@ Study the lesson in this order:
 3. **Quiz.** Open `quiz.md`. Write each answer on the `**Your answer:**` line. Do not open the answer key before you answer.
 
 You can run `/check-progress` at any time. It checks the work that you did. It also tells you what is missing.
+
+If you have a question, or you are blocked on an exercise, run `/teacher <question>`. It guides you to the answer with questions and hints, but it does not give the solutions.
 
 ## Track your progress with git
 
@@ -133,3 +137,5 @@ The skills come from the `alf-study-skills` repository. To get a new version, pu
 git -C <path-to-alf-study-skills> pull
 python3 <path-to-alf-study-skills>/scripts/install-claude.py
 ```
+
+Then run `/bootstrap-update`. It finds the files that use an older structure, and updates them. It does not change the content of your lessons, and it does not remove your progress. To only see what is outdated, run `/bootstrap-update --check`.
