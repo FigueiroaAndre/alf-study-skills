@@ -14,6 +14,7 @@ You build `ROADMAP.md` for a study repository. The roadmap is the full study pat
   - `subjectFamiliarity`: the user's level in this subject.
   - `goal`: why the user studies the subject.
 - The prompt that started you. It can also give the user's background (role, the technologies they know) and scope decisions (e.g. "no frameworks", "no build tool at first"). Use them.
+- The prompt also gives the user's operating system, and tells you if the user needs a guide to set up the development environment, with the user's preferences.
 
 If `state.json` is missing, or one of the four fields is empty, stop and report the problem. Do not guess the profile.
 
@@ -28,6 +29,7 @@ If `state.json` is missing, or one of the four fields is empty, stop and report 
 - **Use the user's background.** Where the user knows a related technology, relate the new concept to it, and say where the analogy breaks down.
 - **Keep each subsection small.** One `####` subsection is one lesson, with up to 10 exercises.
 - **Order matters.** Each section builds on the sections before it.
+- **Environment setup.** If the prompt says that the user needs the setup guide, subsection `1.1` is the setup of the development environment. Write it for the user's operating system, and follow the user's preferences (editor or IDE, install method, build tool). Cover the install, how to check that each tool works, and how to run a first small program. Use only the tools that the BEGINNER level needs. If the setup is not needed, do not add a setup subsection.
 
 ## Format
 
@@ -91,4 +93,5 @@ Rules:
    - The three levels are present, in order.
    - Section numbers go up by one, with no gaps, across all levels.
    - Subsection numbers start with their section number and go up by one inside each section.
+   - If the user needs the setup guide, subsection `1.1` is the environment setup for the user's operating system.
 3. Reply with a short report: the file path, and for each level the list of sections (number and title) with the number of subsections in each.

@@ -1,6 +1,6 @@
 ---
 name: bootstrap
-description: Set up a study repository for a new subject. Ask the user what they want to study, their technical level, their familiarity with the subject, and their goal. Then create state.json, ROADMAP.md (with the roadmap-builder agent) and PROGRESS.md. Use when the user runs /bootstrap or wants to start studying a new subject in an empty repository.
+description: Set up a study repository for a new subject. Ask the user what they want to study, their technical level, their familiarity with the subject, and their goal. Also ask their operating system and whether they need help to set up the development environment. Then create state.json, ROADMAP.md (with the roadmap-builder agent) and PROGRESS.md, and record the operating system in CLAUDE.md. Use when the user runs /bootstrap or wants to start studying a new subject in an empty repository.
 argument-hint: [subject and any extra information]
 ---
 
@@ -12,9 +12,11 @@ If `state.json` exists and has a `subjectOfStudy`, the repository is already set
 
 If `ROADMAP.md` or `PROGRESS.md` exist, ask (in the same question tool call) whether to replace them. If the user keeps a file, skip the step that writes it.
 
+`CLAUDE.md` can already exist. The user writes teaching preferences in it. Never replace it. Step 5 changes only the `## Study environment` section.
+
 ## 1. Gather the information
 
-You need four facts:
+You need four facts for `state.json`:
 
 | Fact | Field in `state.json` | Values |
 | --- | --- | --- |
@@ -33,6 +35,24 @@ How to ask:
    - **Technical level:** Beginner (new to programming or to the field), Intermediate (works with the technology regularly, needs guidance on harder topics), Advanced (senior, learns new technologies fast).
    - **Familiarity with `<subject>`:** Beginner (never used it, or only tried it), Intermediate (used it for real tasks, has gaps), Advanced (uses it daily, wants depth).
    - **Goal:** 2–4 likely goals for this subject (e.g. "Learn Java as a base for Spring", "Prepare for job interviews", "Maintain an existing codebase"). The user can type a custom goal with "Other".
+
+### The development environment
+
+You also need two facts about the user's machine. They do not go into `state.json`.
+
+| Fact | Where it goes | Values |
+| --- | --- | --- |
+| The user's operating system | `CLAUDE.md` (step 5) | Free text, e.g. `"Windows 11"`, `"macOS"`, `"Ubuntu 24.04"` |
+| Whether the user needs a guide to set up the development environment | The roadmap (step 6) | Yes or no, plus the user's preferences |
+
+How to ask:
+
+1. Take these facts from `$ARGUMENTS` if they are there. Do not ask again for a fact that is already clear.
+2. Ask the missing facts in the same question tool call as the facts above:
+   - **Operating system:** Windows, macOS, Linux. The user can type a more precise answer with "Other" (e.g. "Windows with WSL", "Fedora 41").
+   - **Environment setup:** "Do you need instructions to set up the development environment for `<subject>` on your machine?" Offer "No, my environment is ready" and "Yes, guide me".
+3. If the user selects "Yes", ask in plain text if they have preferences, and wait for the answer. Give examples that fit the subject: an editor or IDE, a way to install the tools (package manager, version manager, Docker), a build tool. Tell the user that "no preference" is a good answer. If the operating system is Linux and the user did not give the distribution, ask for it in the same message.
+4. If the user has no preference, or cannot answer, choose common defaults for the subject and the operating system. Tell the user in one short sentence what you chose. Add them to the list of defaults for step 6.
 
 ## 2. Make the subject precise
 
@@ -63,7 +83,7 @@ When you see a sign:
 
 ## 3. Confirm
 
-Show the user a short summary: subject, technical level, familiarity, goal, background, and the scope decisions from step 2. Ask (with the question tool) "Is this correct?" with "Yes, create state.json" and "No, change something". On "No", ask what to change and repeat this step.
+Show the user a short summary: subject, technical level, familiarity, goal, background, operating system, environment setup (yes or no, with the preferences), and the scope decisions from step 2. Ask (with the question tool) "Is this correct?" with "Yes, create state.json" and "No, change something". On "No", ask what to change and repeat this step.
 
 ## 4. Write `state.json`
 
@@ -94,7 +114,23 @@ Check the file:
 - `technicalLevel` and `subjectFamiliarity` are each one of `"beginner"`, `"intermediate"`, `"advanced"`.
 - `subjectOfStudy` and `goal` are not empty.
 
-## 5. Build `ROADMAP.md`
+## 5. Record the operating system in `CLAUDE.md`
+
+Write a `## Study environment` section in `CLAUDE.md` at the repository root. Other commands read this file, so they can give commands that work on the user's machine.
+
+```markdown
+## Study environment
+
+- Operating system: macOS
+- Environment setup: guided in lesson 1.1. Preferences: VS Code, SDKMAN.
+```
+
+- Always write the `Operating system` line.
+- Write the `Environment setup` line only if the user needs the setup guide. Give the preferences, or the defaults you chose.
+- If `CLAUDE.md` does not exist, create it with only this section.
+- If `CLAUDE.md` exists, keep all its other content. If it already has a `## Study environment` section, replace that section. If not, add the section at the end of the file.
+
+## 6. Build `ROADMAP.md`
 
 Start the `roadmap-builder` agent with the Agent tool. Wait for it to finish. `state.json` does not store the background or the scope decisions, so give them to the agent in the prompt:
 
@@ -103,12 +139,14 @@ Build ROADMAP.md for the study repository at <absolute path of the current worki
 Read the study profile from state.json.
 Background: <role, experience, and the technologies the user knows>.
 Scope decisions: <each decision from step 2, e.g. "core language only, no Spring", "no build tool at first">.
+Operating system: <the operating system from step 1>.
+Environment setup: <"not needed", or "needed. Preferences: <the preferences or the defaults you chose>">.
 Defaults chosen because the user could not answer: <list, or "none">.
 ```
 
-When the agent finishes, read `ROADMAP.md`. If the file is missing, or does not have the three levels `## BEGINNER`, `## INTERMEDIATE` and `## ADVANCED`, tell the user and stop.
+When the agent finishes, read `ROADMAP.md`. If the file is missing, or does not have the three levels `## BEGINNER`, `## INTERMEDIATE` and `## ADVANCED`, tell the user and stop. If the user needs the setup guide and subsection `1.1` is not the environment setup, tell the user and stop.
 
-## 6. Write `PROGRESS.md`
+## 7. Write `PROGRESS.md`
 
 Build `PROGRESS.md` from `ROADMAP.md`. It is a checklist with the same structure:
 
@@ -148,17 +186,19 @@ Rules:
 - "Section Summary" is the last `##` heading. It has one `- [ ]` item per `###` section, in order, with the section number and title.
 - All boxes are unchecked.
 
-## 7. Verify
+## 8. Verify
 
 - Every `####` subsection in `PROGRESS.md` has a matching subsection in `ROADMAP.md`, with the same number and title, under the same level and section. The reverse is also true.
 - Every subsection in `PROGRESS.md` has at least one item.
 - "Section Summary" lists every `###` section.
+- `CLAUDE.md` has a `## Study environment` section with the operating system.
 
-## 8. Report
+## 9. Report
 
 Reply with:
 
 - The profile: subject, technical level, familiarity, goal.
-- The files you created: `state.json`, `ROADMAP.md`, `PROGRESS.md`.
+- The operating system, and whether lesson 1.1 is the environment setup.
+- The files you created or changed: `state.json`, `CLAUDE.md`, `ROADMAP.md`, `PROGRESS.md`.
 - For each level, the list of sections, with the number of subsections in each.
 - Each default that you chose because the user could not answer.
