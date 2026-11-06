@@ -32,10 +32,10 @@ If `CLAUDE.md` has no study profile, stop and report the problem.
 
 ## Check a theory topic
 
-The item path is `Theory/<N>_<topic>/`. The folder has `theory.md`, `practice.md`, `practice-solution.md`, and the student's work for the practice exercises.
+The item path is `Theory/<N>_<topic>/`. The folder has `theory.md`, `practice.md`, `practice-solution.md`, an optional `assets/` folder, and the student's work for the practice exercises.
 
 1. Read `practice.md`. It has 2 small exercises, each with an expected result.
-2. Find the student's work for each practice exercise: all files in the topic folder except `theory.md`, `practice.md` and `practice-solution.md`. Match each file to a practice exercise by its name, its content, or the file name that `practice.md` gives.
+2. Find the student's work for each practice exercise: all files in the topic folder except `theory.md`, `practice.md`, `practice-solution.md` and the `assets/` folder. Match each file to a practice exercise by its name, its content, or the file name that `practice.md` gives.
 3. Run the student's work as `practice.md` says, and compare the result with the expected result. Read `practice-solution.md` to help you judge, but do not copy it into the feedback.
 4. Judge each practice exercise:
    - **correct:** it gives the expected result. A different approach that gives the expected result is correct. These exercises are not graded, so be generous with style.
@@ -45,11 +45,11 @@ The item path is `Theory/<N>_<topic>/`. The folder has `theory.md`, `practice.md
 
 ## Check an exercise
 
-The item path is `Exercises/<N>_<name>/`. The folder has `exercise.md`, a verification file (or `checklist.md`), an optional starter file, and the student's code.
+The item path is `Exercises/<N>_<name>/`. The folder has `exercise.md`, a verification file (or `checklist.md`), an optional starter file, optional setup files (listed in the `## Setup` section of `exercise.md`, e.g. `compose.yaml`), an optional `assets/` folder, and the student's code. The setup files and `assets/` are not the student's work.
 
 1. Read `exercise.md` (requirements, examples, "How to verify") and the student's code.
 2. Decide if the student answered: the folder has no student code, or only the starter file with its `TODO` markers and no real code. Then the result is `not answered`.
-3. Copy the exercise folder to the temporary directory. Run the verification command from "How to verify" there. Also test the examples and the edge cases in `exercise.md` that the verification file does not cover. Write any extra test harness in the temporary directory.
+3. Copy the exercise folder to the temporary directory. If `exercise.md` has a `## Setup` section, start the setup there as it says (e.g. `docker compose up -d`), and stop it at the end (e.g. `docker compose down -v`). If you cannot start it (e.g. no Docker), check the code by reading it, and say in the feedback that you could not run the verification. Run the verification command from "How to verify" there. Also test the examples and the edge cases in `exercise.md` that the verification file does not cover. Write any extra test harness in the temporary directory.
 4. If the folder has `checklist.md` and no verification file, check the student's work against each point of the checklist.
 5. Judge the result against the requirements of `exercise.md`:
    - **correct:** it meets all the requirements and the verification passes. A working solution that meets the requirements is correct. You can still note an idiom that the theory told the student to avoid.

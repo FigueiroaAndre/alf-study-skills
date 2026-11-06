@@ -27,6 +27,7 @@ This tree shows a study repository after two lessons. The names in `<>` change f
         │   │   ├── theory.md
         │   │   ├── practice.md
         │   │   ├── practice-solution.md
+        │   │   ├── assets/             # Optional: images, pages, and other files for the theory
         │   │   └── <practice file>     # Your practice file
         │   └── 2_<topic>/
         │       └── ...
@@ -34,6 +35,7 @@ This tree shows a study repository after two lessons. The names in `<>` change f
             ├── 1_<exercise_name>/
             │   ├── exercise.md
             │   ├── <test file>
+            │   ├── <setup files>       # Optional: e.g. compose.yaml for a database
             │   └── <code file>         # Your code
             └── 2_<exercise_name>/
                 └── ...
@@ -49,6 +51,9 @@ This tree shows a study repository after two lessons. The names in `<>` change f
 | `Lessons/` | One folder for each lesson. The name has a number and a subject: `<NN>_<subject>/`. |
 | `Theory/` | One folder for each topic of the lesson. Each folder has the theory, two small practice exercises, and their solutions. You save your practice files here. |
 | `Exercises/` | One folder for each exercise, in order of difficulty. Each folder has the instructions and a test file. You write your code here. |
+| `assets/` | Optional support files: images, HTML pages, diagrams, sample data. Do not edit them. |
+| Setup files | Optional files in an exercise folder that prepare what the exercise needs, e.g. a `compose.yaml` that starts a database. The `## Setup` section of `exercise.md` tells you how to use them. Do not edit them. |
+| `Teacher/` | Optional. Support files that `/teacher` creates for you, e.g. a diagram or a page to try. You can delete them. |
 | `quiz.md` | The quiz of the lesson. You write your answers in this file. |
 | `progress.json` | The progress of the lesson. `/check-progress` updates it. |
 
@@ -91,13 +96,16 @@ Study the lesson in this order:
    3. Do not open `practice-solution.md` before you try the exercises.
 2. **Exercises.** For each exercise folder in `Exercises/`, in order:
    1. Read `exercise.md`.
-   2. Write your code in the exercise folder.
-   3. Run the test command from the "How to verify" section of `exercise.md`.
+   2. If `exercise.md` has a `## Setup` section, do the setup first (e.g. start the database).
+   3. Write your code in the exercise folder.
+   4. Run the test command from the "How to verify" section of `exercise.md`.
 3. **Quiz.** Open `quiz.md`. Write each answer on the `**Your answer:**` line. Do not open the answer key before you answer.
 
 You can run `/check-progress` at any time. It checks the work that you did. It also tells you what is missing.
 
 If you have a question, or you are blocked on an exercise, run `/teacher <question>`. It guides you to the answer with questions and hints, but it does not give the solutions.
+
+The lessons use Mermaid diagrams. GitHub shows them as pictures. In your editor, you can need an extension, e.g. a Mermaid preview extension for VS Code.
 
 ## Track your progress with git
 

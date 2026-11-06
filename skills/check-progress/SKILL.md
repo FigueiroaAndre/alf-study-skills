@@ -30,8 +30,8 @@ Check the student's work on the **current lesson** and update the progress. All 
 
 Before you start the agents, find the items that have no work from the student. Do not start an agent for them:
 
-- **Theory topic:** the topic folder has no files except `theory.md`, `practice.md` and `practice-solution.md`.
-- **Exercise:** the folder has no student code. It has only `exercise.md`, the verification file or `checklist.md`, and an untouched starter file. A starter file is untouched when it has no change in `git status` (if git is set up), or it has only the `TODO` markers and no real code.
+- **Theory topic:** the topic folder has no files except `theory.md`, `practice.md`, `practice-solution.md` and the `assets/` folder.
+- **Exercise:** the folder has no student code. It has only `exercise.md`, the verification file or `checklist.md`, the setup files from the `## Setup` section of `exercise.md`, the `assets/` folder, and an untouched starter file. A starter file is untouched when it has no change in `git status` (if git is set up), or it has only the `TODO` markers and no real code.
 - **Quiz:** every `**Your answer:**` line is empty. Do not count the answer key.
 
 If you are not sure, the item has work. The agent decides.

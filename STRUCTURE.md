@@ -15,20 +15,26 @@ This file describes the folders and files that the commands in `commands/`, the 
 │   └── <NN>_<subject>/        # One folder per lesson, e.g. 03_records/
 │       ├── quiz.md
 │       ├── progress.json
+│       ├── assets/            # Optional: images and files for quiz.md
 │       ├── Theory/
 │       │   ├── 1_<topic>/     # One folder per roadmap bullet
 │       │   │   ├── theory.md
 │       │   │   ├── practice.md
-│       │   │   └── practice-solution.md
+│       │   │   ├── practice-solution.md
+│       │   │   └── assets/    # Optional: images, HTML pages, sample files for the theory
 │       │   └── 2_<topic>/
 │       │       └── ...
 │       └── Exercises/
 │           ├── 1_<exercise_name>/
 │           │   ├── exercise.md
 │           │   ├── <verification file>  # e.g. a test file
+│           │   ├── <setup files>        # Optional, e.g. compose.yaml, seed.sql
+│           │   ├── assets/    # Optional: illustrations for exercise.md
 │           │   └── ...        # Optional starter file, then the student's code
 │           └── 2_<exercise_name>/
 │               └── ...
+├── Teacher/
+│   └── <NN>_<subject>/        # Optional. Support files that /teacher creates (diagrams, pages, setups to try)
 └── Projects/
     └── <project_name>/        # One folder per project, e.g. library_manager/
         ├── project_description.md
@@ -56,7 +62,7 @@ This file describes the folders and files that the commands in `commands/`, the 
 
 `/bootstrap-update` never changes the content of the lessons: the theory, practice, exercise and quiz files, and the student's files. It only changes the format of the files in the table, and it never removes progress.
 
-`/teacher` is not in the table, because it does not change files. It reads `CLAUDE.md`, `ROADMAP.md`, `PROGRESS.md`, `state.json`, and the lesson and project files, to answer the user's questions and to find the lessons that the user did not study yet.
+`/teacher` is not in the table, because it does not change these files. It only creates new support files in `Teacher/`, when they help. It reads `CLAUDE.md`, `ROADMAP.md`, `PROGRESS.md`, `state.json`, and the lesson and project files, to answer the user's questions and to find the lessons that the user did not study yet.
 
 `/commit` does not change the files. It only reads them to write the commit messages. To split the completions of one `progress.json` file into separate commits, it writes the file step by step, and the last step restores the final version.
 
@@ -286,6 +292,20 @@ The solutions of the two exercises in `practice.md`, with a short explanation. I
 - `/check-progress` sets an exercise to `true` when the code is correct.
 - `/check-progress` sets `isQuizCompleted` to `true` when all questions have an answer, even if some answers are wrong.
 - `completed` becomes `true` when all theory topics, all exercises and the quiz are complete.
+
+### Support assets
+
+`/new-lesson` and its agents add visual aids and support files only when they help the student more than text does. The rules are in `skills/new-lesson/references/support-assets.md`.
+
+- **Inline aids:** Markdown tables and Mermaid diagrams, in `theory.md`, `practice.md`, `exercise.md` or `quiz.md`.
+- **`assets/` folders:** files that a Markdown file links, e.g. an HTML page and its screenshot. A theory topic, an exercise, and the quiz (in the lesson folder) can each have one. The student does not edit them.
+- **Setup files:** files at the root of an exercise folder that prepare what the exercise needs but does not teach, e.g. a `compose.yaml` with a database and a `seed.sql`. The `## Setup` section of `exercise.md` lists them and gives the commands.
+
+The check commands do not count the `assets/` folders and the setup files as the student's work.
+
+## Teacher
+
+`/teacher` can create support files to explain a concept: a Mermaid diagram in a Markdown file, a small HTML page and its screenshot, or a setup to try (e.g. a `compose.yaml`). It puts them in `Teacher/<NN>_<subject>/`, a new folder for each concept. It never changes an earlier folder. You can keep the files as notes, or delete them.
 
 ## Projects
 

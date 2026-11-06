@@ -21,6 +21,8 @@ If `$ARGUMENTS` contains `--select`, remove it from the arguments and remember i
 
 Write all study files in the language of the study profile, and follow the language rule in `CLAUDE.md`. Use the same language when you talk to the user.
 
+Read [references/support-assets.md](references/support-assets.md) in the folder of this skill. It tells when and how to add diagrams, tables, and asset files (HTML pages, screenshots, Docker Compose files, seed data). Its main rule: add an aid only when it helps the student more than text does. You use it for the quiz and the exercise plan. The agents use it too: give them the **absolute path** of this file in their prompts (`<support assets guide>` below).
+
 ## 1. Pick the lesson
 
 A lesson always covers one `####` subsection of `ROADMAP.md`, or one custom subject.
@@ -67,6 +69,7 @@ Lesson folder: Lessons/<NN>_<subject>
 Topic folder: Lessons/<NN>_<subject>/Theory/<N>_<topic>
 Topic title: <title>
 Topic scope: <full text of the roadmap bullet, or the scope sentence>
+Support assets guide: <support assets guide>
 Covers line: **Covers:** PROGRESS.md <number> <subsection title>   (or: **Covers:** none)
 Roadmap subsection (all bullets, for context):
 <the full text of the subsection, including the Practice bullet>
@@ -78,6 +81,7 @@ All topics of this lesson, in order:
 After each agent finishes:
 
 - Check that `theory.md`, `practice.md` and `practice-solution.md` exist in the topic folder.
+- If the agent added assets, check that each file linked from the Markdown files exists, and that `assets/` has no unused file.
 - If a file is missing, or the agent reports a problem, start the agent again one time with the problem in the prompt. If it fails again, stop and tell the user which topics are done.
 
 ## 5. Write the exercises
@@ -93,6 +97,8 @@ Read all the `theory.md` files of the lesson. Then plan **up to 10** exercises, 
 
 For each exercise, write: the folder name `<N>_<exercise_name>` (`<N>` starts at `1`, no leading zero; `<exercise_name>` is `snake_case` in English), a title, the topics it practices, and one or two sentences about what it asks and what it adds to the exercise before it.
 
+Also plan the **setup** of each exercise, with the support assets guide. Ask: does the student need a service, data, or files that are not the goal of the exercise? For example, a database for an exercise about queries, or an HTML page for an exercise about CSS selectors. If yes, write the setup in one line (e.g. "`compose.yaml` with PostgreSQL 17 and `seed.sql` with 3 tables"). If no, write "none". Most exercises need no setup. When more exercises need the same service, use the same setup in each of them, so the student learns it one time.
+
 ### 5.2 Start the agents
 
 Start the `lesson-exercise-writer` agent with the Agent tool, **one time for each exercise**, in order. Start the next agent only after the previous agent is finished. Do not run them in parallel: each agent reads the exercises before it, to keep the difficulty progression.
@@ -106,6 +112,8 @@ Exercise folder: Lessons/<NN>_<subject>/Exercises/<N>_<exercise_name>
 Title: <title>
 Topics practiced: <list of topic folders>
 What it asks: <the sentences from the plan>
+Setup: <the setup line from the plan, or none>
+Support assets guide: <support assets guide>
 Full exercise plan, in order:
 <N>_<exercise_name>: <title> — <what it asks>
 ...
@@ -114,6 +122,7 @@ Full exercise plan, in order:
 After each agent finishes:
 
 - Check that `exercise.md` and at least one verification file exist in the exercise folder.
+- If the plan has a setup, check that the setup files exist and that `exercise.md` has a `## Setup` section. Check that each file linked from `exercise.md` exists.
 - Check that the agent ran the verification against a correct solution and that it passed. The agent reports this.
 - If a check fails, start the agent again one time with the problem in the prompt. If it fails again, stop and tell the user which exercises are done.
 
@@ -125,6 +134,7 @@ Create `Lessons/<NN>_<subject>/quiz.md` with **at most 10 questions**. Fewer is 
 - Number the questions. Put them in order from easy to hard. Ask only about what the theory explains.
 - Under each question, add a `**Your answer:**` line for the student.
 - Put the answer key at the end, in a collapsed block: `<details><summary>Answer key</summary> ... </details>`. Give a one-line explanation for each answer. For open questions, give the key points of a good answer.
+- A question can use an aid from the support assets guide, when the question is about it. For example: "What does this diagram show?" with a Mermaid diagram, "Which CSS gives this result?" with a screenshot, or a table to complete. Put the quiz asset files in `Lessons/<NN>_<subject>/assets/`. An aid must not give the answer away. Most quizzes need no aid.
 
 ## 7. Write `progress.json`
 
@@ -160,6 +170,7 @@ Do not change `state.json`. Step 10 offers to select the new lesson.
 - The lesson folder has `Theory/`, `Exercises/`, `quiz.md` and `progress.json`.
 - `Theory/` has one folder for each planned topic. Each folder has `theory.md`, `practice.md` and `practice-solution.md`. `practice.md` has no solutions. Each `theory.md` has the same `**Covers:**` line on its second line.
 - Each exercise folder has `exercise.md` and a verification file. No exercise folder has a solution.
+- Every asset file that a Markdown file links exists, and every file in an `assets/` folder is linked. No service or tool wrote files (data, logs, build output) into the lesson folder.
 - `quiz.md` has 10 questions or fewer. The code snippets in it give the results that the answer key says. Run them if you are not sure.
 - `progress.json` lists every theory folder and every exercise folder. `progress.json` is valid JSON.
 - Do not edit `ROADMAP.md`, `PROGRESS.md` or `state.json`. `/check-progress` checks the `PROGRESS.md` items when the lesson is complete.
@@ -171,6 +182,8 @@ Reply with:
 - The lesson path, and what it covers (roadmap subsection or custom subject).
 - The theory topics, in order.
 - The exercises, in order, and the command that runs the verification of each one.
+- The setup that the exercises need, if any, and the tools that it requires (e.g. "exercises 3 to 5 use Docker Compose with PostgreSQL").
+- The assets that the agents could not check, if any (e.g. no headless browser for a screenshot, or no Docker to run a service).
 - The number of quiz questions.
 
 ## 10. Offer to select the new lesson
