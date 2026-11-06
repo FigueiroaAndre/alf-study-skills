@@ -64,6 +64,8 @@ This file describes the folders and files that the commands in `commands/`, the 
 
 `/teacher` is not in the table, because it does not change these files. It only creates new support files in `Teacher/`, when they help. It reads `CLAUDE.md`, `ROADMAP.md`, `PROGRESS.md`, `state.json`, and the lesson and project files, to answer the user's questions and to find the lessons that the user did not study yet.
 
+`/recap` is not in the table, because it does not change files. It reads `CLAUDE.md`, `ROADMAP.md`, `PROGRESS.md`, `state.json`, the `progress.json` files, the lesson folders and the progress commits in the git log. It tells the user the latest progress and the most likely next step.
+
 `/commit` does not change the files. It only reads them to write the commit messages. To split the completions of one `progress.json` file into separate commits, it writes the file step by step, and the last step restores the final version.
 
 The check commands never change the student's code or the student's answers in `quiz.md`. They put temporary test files in the scratchpad directory, not in the study repository.

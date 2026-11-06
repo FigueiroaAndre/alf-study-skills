@@ -67,6 +67,8 @@ Start Claude Code in this folder:
 claude
 ```
 
+If you come back after a break, run `/recap`. It tells you where you stopped and what to do next.
+
 Then use these commands in a loop:
 
 1. Run `/new-lesson`. It creates the next lesson of the roadmap. At the end, it asks if you want to select the new lesson. Select it.
@@ -80,6 +82,7 @@ Then use these commands in a loop:
 | `/select-lesson [lesson]` | Selects the current lesson. You can give a folder name, a lesson number, a roadmap subsection, or a subject. With no argument, it selects the next lesson of the roadmap. If the lesson does not exist, it offers to create it. |
 | `/check-progress [request]` | Checks the current lesson: the practice of each theory topic, the exercises, and the quiz. It gives feedback and updates your progress. Then it commits your progress. It does not give the solution of an exercise. To see a solution, ask for it, e.g. `/check-progress show solution for exercise 3`. |
 | `/teacher [question]` | Helps you learn the subject. It does not only give the answer: it guides you to it with questions, analogies, and examples. It does not give the solution of an exercise or a quiz question. It gives hints instead. If the question is about a lesson that you did not study yet, it tells you, and asks if you want to continue. |
+| `/recap` | Tells you your latest progress and the most likely next step. Use it when you come back to your study. It does not change your files. |
 | `/commit` | Commits your changes. Each completed item gets its own progress commit. |
 | `/bootstrap` | Sets up the repository again, e.g. for a new subject. It asks before it replaces a file. |
 | `/bootstrap-update` | Updates this repository to the structure of a new version of the skills. It does not change the content of your lessons. |
